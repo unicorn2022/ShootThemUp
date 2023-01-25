@@ -40,6 +40,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     bool IsRunning() const;
 
+    // 获取角色移动的方向
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    float GetMovementDirection() const;
+
 private:
     // WS控制角色前后移动
     bool IsMovingForward = false;

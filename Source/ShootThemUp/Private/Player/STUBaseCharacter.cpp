@@ -61,13 +61,37 @@ bool ASTUBaseCharacter::IsRunning() const {
     return WantsToRun && IsMovingForward && !GetVelocity().IsZero();
 }
 
+// 获取角色移动的方向
+float ASTUBaseCharacter::GetMovementDirection() const {
+    // 特判: 速度为0
+    if (GetVelocity().IsZero()) return 0.0f;
+
+    const FVector VelocityDirection = GetVelocity().GetSafeNormal();
+    const FVector ForwardDirection = GetActorForwardVector();
+    
+    // 通过点乘, 获得具体的角度值
+    float angle = FMath::Acos(FVector::DotProduct(ForwardDirection, VelocityDirection));
+    angle = FMath::RadiansToDegrees(angle);
+    
+    // 通过叉乘结果的Z值, 判断是处于顺时针还是逆时针方向
+    const FVector CrossProduct = FVector::CrossProduct(ForwardDirection, VelocityDirection);
+    
+    // 特判: 速度与角色运动方向重合/相反
+    if (CrossProduct.IsZero()) return angle;
+
+    angle *= FMath::Sign(CrossProduct.Z);
+    return angle;
+}
+
 // WS控制角色前后移动
 void ASTUBaseCharacter::MoveForward(float Amount) {
     IsMovingForward = Amount > 0.0f;
+    if (Amount == 0.0f) return;
     AddMovementInput(GetActorForwardVector(), Amount);
 }
 // AD控制角色左右移动
 void ASTUBaseCharacter::MoveRight(float Amount) {
+    if (Amount == 0.0f) return;
     AddMovementInput(GetActorRightVector(), Amount);
 }
 
