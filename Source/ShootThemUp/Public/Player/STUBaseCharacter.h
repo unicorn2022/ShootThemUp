@@ -8,6 +8,8 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class USTUHealthComponent;
+class UTextRenderComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter {
@@ -25,6 +27,14 @@ protected:
     // 相机
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UCameraComponent* CameraComponent;
+
+    // 角色的血量管理
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    USTUHealthComponent* HealthComponent;
+
+    // 显示角色的血量
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UTextRenderComponent* HealthTextComponent;
 
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
