@@ -26,5 +26,5 @@ void ASTUDevDamageActor::Tick(float DeltaTime) {
     DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 24, SphereColor);
 
     // 造成球状范围伤害
-    UGameplayStatics::ApplyRadialDamage(GetWorld(), Damage, GetActorLocation(), Radius, nullptr, {}, this, nullptr, DoFullDamage);
+    UGameplayStatics::ApplyRadialDamage(GetWorld(), Damage, GetActorLocation(), Radius, DamageType, {}, this, nullptr, DoFullDamage);
 }

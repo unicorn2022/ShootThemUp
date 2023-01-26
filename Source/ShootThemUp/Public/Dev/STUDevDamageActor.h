@@ -31,6 +31,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool DoFullDamage = false;
 
+    // 伤害的类型
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<UDamageType> DamageType;
+
 protected:
 	virtual void BeginPlay() override;
 
