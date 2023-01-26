@@ -50,13 +50,6 @@ void ASTUBaseCharacter::Tick(float DeltaTime) {
     const float Health = HealthComponent->GetHealth();
     const FString HealthString = FString::Printf(TEXT("%.0f"), Health);
     HealthTextComponent->SetText(FText::FromString(HealthString));
-
-    // 角色被击中, 参数如下:
-    // (1) float Damage:                    造成的伤害值
-    // (2) FDamageEvent& DamageEvent:       伤害事件, 可以包含伤害的类型
-    // (3) AController* EventInstigator:    受到伤害的角色的控制器
-    // (4) AActor* DamageCauser:            造成伤害的Actor
-    TakeDamage(0.1f, FDamageEvent{}, Controller, this);
 }
 
 // Called to bind functionality to input

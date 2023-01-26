@@ -21,12 +21,15 @@ void USTUHealthComponent::BeginPlay()
     // 订阅OnTakeAnyDamage事件
     AActor* ComponentOwner = GetOwner();
     if (ComponentOwner) {
+        UE_LOG(LogSTUHealthComponent, Warning, TEXT("订阅OnTakeAnyDamage事件"));
         ComponentOwner->OnTakeAnyDamage.AddDynamic(this, &USTUHealthComponent::OnTakeAnyDamageHandler);
     }
 }
 
 // 角色受到伤害的回调函数
 void USTUHealthComponent::OnTakeAnyDamageHandler(
-    AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser) {
+    AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser) 
+{
     Health -= Damage;
+    UE_LOG(LogSTUHealthComponent, Display, TEXT("Damage: %f"), Damage);
 }
