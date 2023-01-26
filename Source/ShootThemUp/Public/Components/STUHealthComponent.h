@@ -26,4 +26,9 @@ protected:
 private:
     // 角色当前剩余血量
     float Health = 0.0f;
+
+    // 角色受到伤害的回调函数
+    UFUNCTION()
+    void OnTakeAnyDamageHandler(
+        AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 };
