@@ -7,6 +7,7 @@
 #include "Components/STUCharacterMovementComponent.h"
 #include "Components/STUHealthComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "GameFramework/Controller.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUBaseCharacter, All, All);
 
@@ -131,6 +132,10 @@ void ASTUBaseCharacter::OnDeath() {
     GetCharacterMovement()->DisableMovement();
     // 5s后摧毁角色
     SetLifeSpan(5.0f);
+    // 切换状态
+    if (Controller) {
+        Controller->ChangeState(NAME_Spectating);
+    }
 }
 
 void ASTUBaseCharacter::OnHealthChanged(float Health) {
