@@ -1,24 +1,20 @@
 // Shoot Them Up Game, All Rights Reserved
 
-
 #include "Components/STUHealthComponent.h"
 #include "GameFramework/Actor.h"
-#include "Dev/STUFireDamageType.h"
-#include "Dev/STUIceDamageType.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUHealthComponent, All, All);
 
-USTUHealthComponent::USTUHealthComponent()
-{
-	PrimaryComponentTick.bCanEverTick = false;
+USTUHealthComponent::USTUHealthComponent() {
+    PrimaryComponentTick.bCanEverTick = false;
 }
 
-
-void USTUHealthComponent::BeginPlay()
-{
+void USTUHealthComponent::BeginPlay() {
     Super::BeginPlay();
-    
+
     Health = MaxHealth;
+    // 广播OnHealthChanged委托
+    OnHealthChanged.Broadcast(Health);
 
     // 订阅OnTakeAnyDamage事件
     AActor* ComponentOwner = GetOwner();
@@ -30,16 +26,14 @@ void USTUHealthComponent::BeginPlay()
 
 // 角色受到伤害的回调函数
 void USTUHealthComponent::OnTakeAnyDamageHandler(
-    AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser) 
-{
-    Health -= Damage;
-    UE_LOG(LogSTUHealthComponent, Display, TEXT("Damage: %f"), Damage);
+    AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser) {
+    if (Damage <= 0.0f || IsDead()) return;
 
-    if (DamageType) {
-        if (DamageType->IsA<USTUFireDamageType>()) {
-            UE_LOG(LogSTUHealthComponent, Display, TEXT("So hot !!!!"));
-        } else if (DamageType->IsA<USTUIceDamageType>()) {
-            UE_LOG(LogSTUHealthComponent, Display, TEXT("So cold !!!!"));
-        }
-    }
+    // 保证Health在合理的范围内
+    Health = FMath::Clamp(Health - Damage, 0.0f, MaxHealth);
+    // 广播OnHealthChanged委托
+    OnHealthChanged.Broadcast(Health);
+
+    // 角色死亡后, 广播OnDeath委托
+    if (IsDead()) OnDeath.Broadcast();
 }

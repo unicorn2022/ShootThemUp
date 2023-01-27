@@ -36,6 +36,10 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UTextRenderComponent* HealthTextComponent;
 
+    // 死亡动画蒙太奇
+    UPROPERTY(EditDefaultsOnly, Category = "Animation")
+    UAnimMontage* DeathAnimMontage;
+
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
@@ -65,4 +69,9 @@ private:
     bool WantsToRun = false; // 按下Shift只能表示想要跑步, 只有当还按下W时, 才能开始跑步
     void OnStartRunning();
     void OnStopRunning();
+
+    // 角色死亡回调函数
+    void OnDeath();
+    // 角色血量变化回调函数
+    void OnHealthChanged(float Health);
 };

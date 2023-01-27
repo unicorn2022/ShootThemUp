@@ -41,15 +41,18 @@ void ASTUBaseCharacter::BeginPlay() {
     // 检查组件是否成功创建(仅开发阶段可用)
     check(HealthComponent);
     check(HealthTextComponent);
+    check(GetCharacterMovement());
+
+    // 订阅OnDeath委托
+    HealthComponent->OnDeath.AddUObject(this, &ASTUBaseCharacter::OnDeath);
+    // 订阅OnHealthChanged委托
+    HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChanged);
+    // 先调用一次OnHealthChanged, 获取角色的初始血量
+    OnHealthChanged(HealthComponent->GetHealth());
 }
 
 void ASTUBaseCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
-
-    // 获取角色当前血量并显示
-    const float Health = HealthComponent->GetHealth();
-    const FString HealthString = FString::Printf(TEXT("%.0f"), Health);
-    HealthTextComponent->SetText(FText::FromString(HealthString));
 }
 
 // Called to bind functionality to input
@@ -117,6 +120,23 @@ void ASTUBaseCharacter::OnStartRunning() {
 }
 void ASTUBaseCharacter::OnStopRunning() {
     WantsToRun = false;
+}
+
+// 角色死亡回调函数
+void ASTUBaseCharacter::OnDeath() {
+    UE_LOG(LogSTUBaseCharacter, Warning, TEXT("Player %s is dead"), *GetName());
+    // 播放死亡动画蒙太奇
+    PlayAnimMontage(DeathAnimMontage);
+    // 禁止角色的移动
+    GetCharacterMovement()->DisableMovement();
+    // 5s后摧毁角色
+    SetLifeSpan(5.0f);
+}
+
+void ASTUBaseCharacter::OnHealthChanged(float Health) {
+    // 获取角色当前血量并显示
+    const FString HealthString = FString::Printf(TEXT("%.0f"), Health);
+    HealthTextComponent->SetText(FText::FromString(HealthString));
 }
 
 
