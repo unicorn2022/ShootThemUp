@@ -132,7 +132,7 @@ void ASTUBaseCharacter::OnDeath() {
     GetCharacterMovement()->DisableMovement();
     // 5s后摧毁角色
     SetLifeSpan(5.0f);
-    // 切换状态
+    // 切换状态, 从而将pawn切换为观察者类
     if (Controller) {
         Controller->ChangeState(NAME_Spectating);
     }
