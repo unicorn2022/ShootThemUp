@@ -50,6 +50,9 @@ void ASTUBaseCharacter::BeginPlay() {
     HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChanged);
     // 先调用一次OnHealthChanged, 获取角色的初始血量
     OnHealthChanged(HealthComponent->GetHealth());
+
+    // 订阅LandedDelegate委托
+    LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnGroundLanded);
 }
 
 void ASTUBaseCharacter::Tick(float DeltaTime) {
@@ -59,6 +62,8 @@ void ASTUBaseCharacter::Tick(float DeltaTime) {
 // Called to bind functionality to input
 void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+    check(PlayerInputComponent);
 
     // WASD控制角色移动
     PlayerInputComponent->BindAxis("MoveForward", this, &ASTUBaseCharacter::MoveForward);
@@ -130,8 +135,8 @@ void ASTUBaseCharacter::OnDeath() {
     PlayAnimMontage(DeathAnimMontage);
     // 禁止角色的移动
     GetCharacterMovement()->DisableMovement();
-    // 5s后摧毁角色
-    SetLifeSpan(5.0f);
+    // 一段时间后摧毁角色
+    SetLifeSpan(LifeSpanOnDeath);
     // 切换状态, 从而将pawn切换为观察者类
     if (Controller) {
         Controller->ChangeState(NAME_Spectating);
@@ -142,6 +147,19 @@ void ASTUBaseCharacter::OnHealthChanged(float Health) {
     // 获取角色当前血量并显示
     const FString HealthString = FString::Printf(TEXT("%.0f"), Health);
     HealthTextComponent->SetText(FText::FromString(HealthString));
+}
+
+// 角色坠落回调函数
+void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit) {
+    // 根据角色坠落时的Z速度, 计算扣除血量
+    const float FallVelocityZ = FMath::Abs(GetCharacterMovement()->Velocity.Z);
+    UE_LOG(LogSTUBaseCharacter, Display, TEXT("On Landed: %f"), FallVelocityZ);
+    if (FallVelocityZ < LandedDamageVelocityScale.X) return;
+    
+    // 将FallVelocityZ映射到(LandedDamageVelocityScale => LandedDamageScale)
+    const float FinalDamage = FMath::GetMappedRangeValueClamped(LandedDamageVelocityScale, LandedDamageScale, FallVelocityZ);
+    UE_LOG(LogSTUBaseCharacter, Display, TEXT("FinalDamage: %f"), FinalDamage);
+    TakeDamage(FinalDamage, FDamageEvent{}, nullptr, nullptr);
 }
 
 

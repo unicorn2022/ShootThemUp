@@ -40,7 +40,17 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Animation")
     UAnimMontage* DeathAnimMontage;
 
-    // Called when the game starts or when spawned
+    // 角色死亡时的存活时间
+    UPROPERTY(EditDefaultsOnly, Category = "Damage")
+    float LifeSpanOnDeath = 5.0f;
+    // 角色坠落伤害速度范围
+    UPROPERTY(EditDefaultsOnly, Category = "Damage")
+    FVector2D LandedDamageVelocityScale = FVector2D(900.0f, 1200.0f);
+    // 角色坠落伤害范围
+    UPROPERTY(EditDefaultsOnly, Category = "Damage")
+    FVector2D LandedDamageScale = FVector2D(10.0f, 100.0f);
+
+
     virtual void BeginPlay() override;
 
 public:
@@ -74,4 +84,8 @@ private:
     void OnDeath();
     // 角色血量变化回调函数
     void OnHealthChanged(float Health);
+
+    // 角色坠落回调函数
+    UFUNCTION()
+    void OnGroundLanded(const FHitResult& Hit);
 };
