@@ -10,6 +10,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class USTUHealthComponent;
 class UTextRenderComponent;
+class ASTUBaseWeapon;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter {
@@ -23,41 +24,44 @@ protected:
     // 相机的弹簧臂
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USpringArmComponent* SpringArmComponent;
-    
     // 相机
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UCameraComponent* CameraComponent;
 
-    // 角色的血量管理
+    
+    // 血量管理
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USTUHealthComponent* HealthComponent;
-
-    // 显示角色的血量
+    // 显示血量
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UTextRenderComponent* HealthTextComponent;
 
+    
     // 死亡动画蒙太奇
     UPROPERTY(EditDefaultsOnly, Category = "Animation")
     UAnimMontage* DeathAnimMontage;
 
-    // 角色死亡时的存活时间
+    
+    // 死亡后显示的时间
     UPROPERTY(EditDefaultsOnly, Category = "Damage")
     float LifeSpanOnDeath = 5.0f;
-    // 角色坠落伤害速度范围
+    // 坠落伤害速度范围
     UPROPERTY(EditDefaultsOnly, Category = "Damage")
     FVector2D LandedDamageVelocityScale = FVector2D(900.0f, 1200.0f);
-    // 角色坠落伤害范围
+    // 坠落伤害范围
     UPROPERTY(EditDefaultsOnly, Category = "Damage")
     FVector2D LandedDamageScale = FVector2D(10.0f, 100.0f);
 
+    
+    // 武器的类别
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    TSubclassOf<ASTUBaseWeapon> WeaponClass;
 
     virtual void BeginPlay() override;
 
 public:
-    // Called every frame
     virtual void Tick(float DeltaTime) override;
 
-    // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
     // 判断角色是否处于奔跑状态
@@ -80,12 +84,15 @@ private:
     void OnStartRunning();
     void OnStopRunning();
 
-    // 角色死亡回调函数
+    // 死亡回调函数
     void OnDeath();
-    // 角色血量变化回调函数
+    // 血量变化回调函数
     void OnHealthChanged(float Health);
 
-    // 角色坠落回调函数
+    // 坠落回调函数
     UFUNCTION()
     void OnGroundLanded(const FHitResult& Hit);
+
+    // 生成武器
+    void SpawnWeapon();
 };

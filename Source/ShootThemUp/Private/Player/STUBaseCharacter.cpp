@@ -8,6 +8,7 @@
 #include "Components/STUHealthComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "GameFramework/Controller.h"
+#include "Weapon/STUBaseWeapon.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUBaseCharacter, All, All);
 
@@ -53,6 +54,9 @@ void ASTUBaseCharacter::BeginPlay() {
 
     // 订阅LandedDelegate委托
     LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnGroundLanded);
+
+    // 生成武器
+    SpawnWeapon();
 }
 
 void ASTUBaseCharacter::Tick(float DeltaTime) {
@@ -128,7 +132,7 @@ void ASTUBaseCharacter::OnStopRunning() {
     WantsToRun = false;
 }
 
-// 角色死亡回调函数
+// 死亡回调函数
 void ASTUBaseCharacter::OnDeath() {
     UE_LOG(LogSTUBaseCharacter, Warning, TEXT("Player %s is dead"), *GetName());
     // 播放死亡动画蒙太奇
@@ -143,13 +147,14 @@ void ASTUBaseCharacter::OnDeath() {
     }
 }
 
+// 血量变化回调函数
 void ASTUBaseCharacter::OnHealthChanged(float Health) {
     // 获取角色当前血量并显示
     const FString HealthString = FString::Printf(TEXT("%.0f"), Health);
     HealthTextComponent->SetText(FText::FromString(HealthString));
 }
 
-// 角色坠落回调函数
+// 坠落回调函数
 void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit) {
     // 根据角色坠落时的Z速度, 计算扣除血量
     const float FallVelocityZ = FMath::Abs(GetCharacterMovement()->Velocity.Z);
@@ -160,6 +165,18 @@ void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit) {
     const float FinalDamage = FMath::GetMappedRangeValueClamped(LandedDamageVelocityScale, LandedDamageScale, FallVelocityZ);
     UE_LOG(LogSTUBaseCharacter, Display, TEXT("FinalDamage: %f"), FinalDamage);
     TakeDamage(FinalDamage, FDamageEvent{}, nullptr, nullptr);
+}
+
+// 生成武器
+void ASTUBaseCharacter::SpawnWeapon() {
+    if (!GetWorld()) return;
+    // 生成actor
+    const auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
+    // 将actor绑定到角色身上
+    if (Weapon) {
+        FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
+        Weapon->AttachToComponent(GetMesh(), AttachmentRules, "WeaponSocket");
+    }
 }
 
 
