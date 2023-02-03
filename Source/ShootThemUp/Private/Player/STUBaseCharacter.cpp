@@ -14,9 +14,8 @@ DEFINE_LOG_CATEGORY_STATIC(LogSTUBaseCharacter, All, All);
 
 // 由于CharacterMovementComponent组件是默认组件, 因此我们需要通过参数显式指定
 // 在调用父类的构造函数时, 显式指定CharacterMovementComponentName使用自定义的USTUCharacterMovementComponent
-ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit) 
-    : Super(ObjInit.SetDefaultSubobjectClass<USTUCharacterMovementComponent>(ACharacter::CharacterMovementComponentName)) 
-{
+ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
+    : Super(ObjInit.SetDefaultSubobjectClass<USTUCharacterMovementComponent>(ACharacter::CharacterMovementComponentName)) {
     // 允许该character每一帧调用Tick()
     PrimaryActorTick.bCanEverTick = true;
 
@@ -24,6 +23,7 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
     SpringArmComponent->SetupAttachment(GetRootComponent());
     SpringArmComponent->bUsePawnControlRotation = true;
+    SpringArmComponent->SocketOffset = FVector(0.0f, 100.0f, 80.0f);
 
     // 创建相机组件, 并设置其父组件为弹簧臂组件
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
@@ -35,6 +35,7 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     // 创建血量显示组件, 并设置其父组件为根组件
     HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("TextRenderComponent");
     HealthTextComponent->SetupAttachment(GetRootComponent());
+    HealthTextComponent->SetOwnerNoSee(true);
 }
 
 void ASTUBaseCharacter::BeginPlay() {
@@ -72,15 +73,15 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     // WASD控制角色移动
     PlayerInputComponent->BindAxis("MoveForward", this, &ASTUBaseCharacter::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &ASTUBaseCharacter::MoveRight);
-    
+
     // 鼠标控制相机移动
     PlayerInputComponent->BindAxis("LookUp", this, &ASTUBaseCharacter::AddControllerPitchInput);
     PlayerInputComponent->BindAxis("TurnAround", this, &ASTUBaseCharacter::AddControllerYawInput);
 
     // 空格键控制角色跳跃
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
-    
-    // 左Shift控制角色开始跑动 
+
+    // 左Shift控制角色开始跑动
     PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::OnStartRunning);
     PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::OnStopRunning);
 }
@@ -97,14 +98,14 @@ float ASTUBaseCharacter::GetMovementDirection() const {
 
     const FVector VelocityDirection = GetVelocity().GetSafeNormal();
     const FVector ForwardDirection = GetActorForwardVector();
-    
+
     // 通过点乘, 获得具体的角度值
     float angle = FMath::Acos(FVector::DotProduct(ForwardDirection, VelocityDirection));
     angle = FMath::RadiansToDegrees(angle);
-    
+
     // 通过叉乘结果的Z值, 判断是处于顺时针还是逆时针方向
     const FVector CrossProduct = FVector::CrossProduct(ForwardDirection, VelocityDirection);
-    
+
     // 特判: 速度与角色运动方向重合/相反
     if (CrossProduct.IsZero()) return angle;
 
@@ -160,7 +161,7 @@ void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit) {
     const float FallVelocityZ = FMath::Abs(GetCharacterMovement()->Velocity.Z);
     UE_LOG(LogSTUBaseCharacter, Display, TEXT("On Landed: %f"), FallVelocityZ);
     if (FallVelocityZ < LandedDamageVelocityScale.X) return;
-    
+
     // 将FallVelocityZ映射到(LandedDamageVelocityScale => LandedDamageScale)
     const float FinalDamage = FMath::GetMappedRangeValueClamped(LandedDamageVelocityScale, LandedDamageScale, FallVelocityZ);
     UE_LOG(LogSTUBaseCharacter, Display, TEXT("FinalDamage: %f"), FinalDamage);
@@ -178,5 +179,3 @@ void ASTUBaseCharacter::SpawnWeapon() {
         Weapon->AttachToComponent(GetMesh(), AttachmentRules, "WeaponSocket");
     }
 }
-
-
