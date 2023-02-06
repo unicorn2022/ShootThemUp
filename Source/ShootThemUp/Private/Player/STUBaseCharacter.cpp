@@ -7,8 +7,8 @@
 #include "Components/STUCharacterMovementComponent.h"
 #include "Components/STUHealthComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "Components/STUWeaponComponent.h"
 #include "GameFramework/Controller.h"
-#include "Weapon/STUBaseWeapon.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUBaseCharacter, All, All);
 
@@ -36,6 +36,9 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("TextRenderComponent");
     HealthTextComponent->SetupAttachment(GetRootComponent());
     HealthTextComponent->SetOwnerNoSee(true);
+
+    // 创建武器组件, 由于其是纯逻辑的, 不需要设置父组件
+    WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("STUWeaponComponent");
 }
 
 void ASTUBaseCharacter::BeginPlay() {
@@ -55,9 +58,6 @@ void ASTUBaseCharacter::BeginPlay() {
 
     // 订阅LandedDelegate委托
     LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnGroundLanded);
-
-    // 生成武器
-    SpawnWeapon();
 }
 
 void ASTUBaseCharacter::Tick(float DeltaTime) {
@@ -84,6 +84,9 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     // 左Shift控制角色开始跑动
     PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::OnStartRunning);
     PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::OnStopRunning);
+
+    // 鼠标左键控制武器开火
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Fire);
 }
 
 // 判断角色是否处于奔跑状态
@@ -168,14 +171,4 @@ void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit) {
     TakeDamage(FinalDamage, FDamageEvent{}, nullptr, nullptr);
 }
 
-// 生成武器
-void ASTUBaseCharacter::SpawnWeapon() {
-    if (!GetWorld()) return;
-    // 生成actor
-    const auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
-    // 将actor绑定到角色身上
-    if (Weapon) {
-        FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
-        Weapon->AttachToComponent(GetMesh(), AttachmentRules, "WeaponSocket");
-    }
-}
+

@@ -10,7 +10,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class USTUHealthComponent;
 class UTextRenderComponent;
-class ASTUBaseWeapon;
+class USTUWeaponComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter {
@@ -21,21 +21,24 @@ public:
     ASTUBaseCharacter(const FObjectInitializer& ObjInit);
 
 protected:
-    // 相机的弹簧臂
+    // 组件：相机的弹簧臂
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USpringArmComponent* SpringArmComponent;
-    // 相机
+    // 组件：相机
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UCameraComponent* CameraComponent;
 
     
-    // 血量管理
+    // 组件：血量管理
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USTUHealthComponent* HealthComponent;
-    // 显示血量
+    // 组件：显示血量
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UTextRenderComponent* HealthTextComponent;
 
+    // 组件：武器管理
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    USTUWeaponComponent* WeaponComponent;
     
     // 死亡动画蒙太奇
     UPROPERTY(EditDefaultsOnly, Category = "Animation")
@@ -51,11 +54,6 @@ protected:
     // 坠落伤害范围
     UPROPERTY(EditDefaultsOnly, Category = "Damage")
     FVector2D LandedDamageScale = FVector2D(10.0f, 100.0f);
-
-    
-    // 武器的类别
-    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-    TSubclassOf<ASTUBaseWeapon> WeaponClass;
 
     virtual void BeginPlay() override;
 
@@ -93,6 +91,4 @@ private:
     UFUNCTION()
     void OnGroundLanded(const FHitResult& Hit);
 
-    // 生成武器
-    void SpawnWeapon();
 };

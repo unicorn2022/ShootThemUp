@@ -15,6 +15,9 @@ class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor {
 public:
     ASTUBaseWeapon();
 
+    // 开火, 不同武器会有不同的开火方式
+    virtual void Fire();
+
 protected:
     // 武器的骨骼网格体
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
