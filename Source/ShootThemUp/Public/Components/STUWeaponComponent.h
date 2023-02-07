@@ -16,7 +16,9 @@ public:
     USTUWeaponComponent();
 
     // 开火
-    void Fire();
+    void StartFire();
+    // 停止开火
+    void StopFire();
 
 protected:
     // 武器的类别

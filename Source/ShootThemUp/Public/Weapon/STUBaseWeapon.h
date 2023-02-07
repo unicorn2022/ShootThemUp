@@ -16,7 +16,9 @@ public:
     ASTUBaseWeapon();
 
     // 开火, 不同武器会有不同的开火方式
-    virtual void Fire();
+    virtual void StartFire();
+    // 停止开火
+    virtual void StopFire();
 
 protected:
     // 武器的骨骼网格体
@@ -36,6 +38,13 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     float DamageAmount = 10.0f;
 
+    // 自动开火的时间间隔
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    float TimeBetweenShots = 0.1f;
+    // 子弹的随机偏移角度
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    float BulletSpread = 1.5f;
+
 protected:
     // 发射子弹
     void MakeShot();
@@ -51,5 +60,9 @@ protected:
     void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd) const;
     // 对子弹击中的玩家进行伤害
     void MakeDamage(const FHitResult& HitResult) const;
+
+private:
+    // 自动开火的定时器
+    FTimerHandle ShotTimerHandle;
 
 };

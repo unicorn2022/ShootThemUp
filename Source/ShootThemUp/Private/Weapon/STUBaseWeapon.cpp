@@ -22,10 +22,14 @@ void ASTUBaseWeapon::BeginPlay() {
     check(WeaponMesh);
 }
 
-// 开火
-void ASTUBaseWeapon::Fire() {
-    UE_LOG(LogSTUBaseWeapon, Display, TEXT("Fire with Basic Weapon"));
+// 开火, 不同武器会有不同的开火方式
+void ASTUBaseWeapon::StartFire() {
     MakeShot();
+    GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTUBaseWeapon::MakeShot, TimeBetweenShots, true);
+}
+// 停止开火
+void ASTUBaseWeapon::StopFire() {
+    GetWorldTimerManager().ClearTimer(ShotTimerHandle);
 }
 
 // 发射子弹
@@ -85,9 +89,12 @@ bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const 
     FRotator ViewRotation;
     if (!GetPlayerViewPoint(ViewLocation, ViewRotation)) return false;
 
-    // 子弹路径为: 角色当前位置 -> 角色面朝方向
+    // 子弹的起点为: 角色当前位置
     TraceStart = ViewLocation;
-    const FVector ShootDirection = ViewRotation.Vector();
+    // 子弹的方向为: 角色当前正前方 + 一个随机的偏移
+    const auto HalfRad = FMath::DegreesToRadians(BulletSpread);
+    const FVector ShootDirection = FMath::VRandCone(ViewRotation.Vector(), HalfRad);
+    // 子弹的终点为: 角色当前位置沿子弹方向运动一定的距离
     TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
     return true;
 }
