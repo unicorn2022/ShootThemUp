@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/Controller.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUBaseWeapon, All, All);
 
@@ -40,6 +41,9 @@ void ASTUBaseWeapon::MakeShot() {
     MakeHit(HitResult, TraceStart, TraceEnd);
     
     if (HitResult.bBlockingHit) {
+        // 对子弹击中的玩家进行伤害
+        MakeDamage(HitResult);
+
         // 绘制子弹的路径: 枪口位置 -> 碰撞点
         DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
         // 在碰撞处绘制一个球
@@ -98,4 +102,12 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
     
     // 获取子弹路径上，第一个碰撞到的对象，存储到HitResult中
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionQueryParams);
+}
+
+// 对子弹击中的玩家进行伤害
+void ASTUBaseWeapon::MakeDamage(const FHitResult& HitResult) const {
+    const auto DamageActor = HitResult.GetActor();
+    if (!DamageActor) return;
+
+    DamageActor->TakeDamage(DamageAmount, FDamageEvent{}, GetPlayerController(), nullptr);
 }

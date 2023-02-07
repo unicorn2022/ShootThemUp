@@ -32,6 +32,9 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     float TraceMaxDistance = 1500;
 
+    // 武器造成的伤害
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    float DamageAmount = 10.0f;
 
 protected:
     // 发射子弹
@@ -46,4 +49,7 @@ protected:
     bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
     // 执行碰撞逻辑
     void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd) const;
- };
+    // 对子弹击中的玩家进行伤害
+    void MakeDamage(const FHitResult& HitResult) const;
+
+};

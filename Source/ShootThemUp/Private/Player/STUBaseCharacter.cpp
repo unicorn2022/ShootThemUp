@@ -8,6 +8,7 @@
 #include "Components/STUHealthComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Components/STUWeaponComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/Controller.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUBaseCharacter, All, All);
@@ -149,6 +150,9 @@ void ASTUBaseCharacter::OnDeath() {
     if (Controller) {
         Controller->ChangeState(NAME_Spectating);
     }
+
+    // 禁止胶囊体碰撞
+    GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 }
 
 // 血量变化回调函数
