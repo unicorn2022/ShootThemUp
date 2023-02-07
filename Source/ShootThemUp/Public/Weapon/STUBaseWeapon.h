@@ -38,16 +38,9 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     float DamageAmount = 10.0f;
 
-    // 自动开火的时间间隔
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    float TimeBetweenShots = 0.1f;
-    // 子弹的随机偏移角度
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    float BulletSpread = 1.5f;
-
 protected:
     // 发射子弹
-    void MakeShot();
+    virtual void MakeShot();
     // 获取玩家控制器
     APlayerController* GetPlayerController() const;
     // 获取玩家的位置和朝向
@@ -55,14 +48,9 @@ protected:
     // 获取枪口的位置
     FVector GetMuzzleWorldLocation() const;
     // 获取子弹的逻辑路径
-    bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
+    virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
     // 执行碰撞逻辑
     void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd) const;
     // 对子弹击中的玩家进行伤害
     void MakeDamage(const FHitResult& HitResult) const;
-
-private:
-    // 自动开火的定时器
-    FTimerHandle ShotTimerHandle;
-
 };
