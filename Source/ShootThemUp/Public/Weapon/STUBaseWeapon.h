@@ -32,6 +32,18 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     float TraceMaxDistance = 1500;
 
+
+protected:
     // 发射子弹
     void MakeShot();
-};
+    // 获取玩家控制器
+    APlayerController* GetPlayerController() const;
+    // 获取玩家的位置和朝向
+    bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
+    // 获取枪口的位置
+    FVector GetMuzzleWorldLocation() const;
+    // 获取子弹的逻辑路径
+    bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
+    // 执行碰撞逻辑
+    void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd) const;
+ };
