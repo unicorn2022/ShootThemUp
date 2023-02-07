@@ -23,4 +23,15 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USkeletalMeshComponent* WeaponMesh;
     virtual void BeginPlay() override;
+
+    // 武器枪口的插槽名称
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    FName MuzzleSocketName = "MuzzleSocket";
+
+    // 子弹的最大路程
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    float TraceMaxDistance = 1500;
+
+    // 发射子弹
+    void MakeShot();
 };

@@ -29,10 +29,10 @@ void USTUWeaponComponent::SpawnWeapon() {
     CurrentWeapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
     if (!CurrentWeapon) return;
 
-    // 将actor绑定到角色身上
+    // 将武器绑定到角色身上
     FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
     CurrentWeapon->AttachToComponent(Character->GetMesh(), AttachmentRules, WeaponAttachPointName);
-    UE_LOG(LogSTUWeaponComponent, Warning, TEXT("Create Weapon Success!"));
+    CurrentWeapon->SetOwner(Character); // 设置武器的所有者
 }
 
 // 开火
