@@ -33,6 +33,7 @@ void ASTULauncherWeapon::MakeShot() {
     if (Projectile) {
         // 设置榴弹的参数
         Projectile->SetShotDirection(Direction);
+        Projectile->SetOwner(GetOwner());
         // 完成榴弹的创建
         Projectile->FinishSpawning(SpawnTransform);
     }

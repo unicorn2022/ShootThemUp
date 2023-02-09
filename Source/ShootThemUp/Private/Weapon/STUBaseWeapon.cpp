@@ -74,11 +74,3 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
     // 获取子弹路径上，第一个碰撞到的对象，存储到HitResult中
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionQueryParams);
 }
-
-// 对子弹击中的玩家进行伤害
-void ASTUBaseWeapon::MakeDamage(const FHitResult& HitResult) const {
-    const auto DamageActor = HitResult.GetActor();
-    if (!DamageActor) return;
-
-    DamageActor->TakeDamage(DamageAmount, FDamageEvent{}, GetPlayerController(), nullptr);
-}
