@@ -14,25 +14,65 @@ void USTUWeaponComponent::BeginPlay() {
     Super::BeginPlay();
 
     // 生成武器
-    SpawnWeapon();
+    SpawnWeapons();
+    // 装备武器
+    CurrentWeaponIndex = 0;
+    EquipWeapon(CurrentWeaponIndex);
+}
+
+void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+    // 销毁所有武器
+    CurrentWeapon = nullptr;
+    for (auto Weapon : Weapons) {
+        Weapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+        Weapon->Destroy();
+    }
+    Weapons.Empty();
+
+    Super::EndPlay(EndPlayReason);
 }
 
 // 生成武器
-void USTUWeaponComponent::SpawnWeapon() {
-    if (!GetWorld()) return;
-    
+void USTUWeaponComponent::SpawnWeapons() {
     // 判断角色是否存在
     ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character) return;
+    if (!GetWorld() || !Character) return;
     
-    // 生成actor
-    CurrentWeapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
-    if (!CurrentWeapon) return;
+    for (auto WeaponClass : WeaponClasses) {
+        // 生成actor
+        auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
+        if (!Weapon) continue;
 
-    // 将武器绑定到角色身上
+        // 设置武器的所有者
+        Weapon->SetOwner(Character); 
+        Weapons.Add(Weapon);
+
+        // 将武器绑定到角色的某个插槽上
+        AttachWeaponToSocket(Weapon, Character->GetMesh(), WeaponAmorySocketName);
+    }
+}
+
+// 将武器绑定到角色的某个插槽上
+void USTUWeaponComponent::AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& SocketName) {
+    if (!Weapon || !SceneComponent) return;
     FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
-    CurrentWeapon->AttachToComponent(Character->GetMesh(), AttachmentRules, WeaponAttachPointName);
-    CurrentWeapon->SetOwner(Character); // 设置武器的所有者
+    Weapon->AttachToComponent(SceneComponent, AttachmentRules, SocketName);
+}
+
+// 装备武器到角色手上
+void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex) {
+    // 判断角色是否存在 
+    ACharacter* Character = Cast<ACharacter>(GetOwner());
+    if (!GetWorld() || !Character) return;
+
+    // 如果已经有武器, 将当前武器转移到背后
+    if (CurrentWeapon) {
+        CurrentWeapon->StopFire();
+        AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponAmorySocketName);
+    }
+
+    CurrentWeapon = Weapons[WeaponIndex];
+    AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
 }
 
 // 开火
@@ -44,4 +84,10 @@ void USTUWeaponComponent::StartFire() {
 void USTUWeaponComponent::StopFire() {
     if (!CurrentWeapon) return;
     CurrentWeapon->StopFire();
+}
+
+// 切换武器
+void USTUWeaponComponent::NextWeapon() {
+    CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
+    EquipWeapon(CurrentWeaponIndex);
 }

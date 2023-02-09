@@ -89,6 +89,9 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     // 鼠标左键控制武器开火
     PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &USTUWeaponComponent::StartFire);
     PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &USTUWeaponComponent::StopFire);
+    
+    // Tab键切换武器
+    PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon);
 }
 
 // 判断角色是否处于奔跑状态
@@ -154,6 +157,8 @@ void ASTUBaseCharacter::OnDeath() {
 
     // 禁止胶囊体碰撞
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+    // 停止武器组件的开火
+    WeaponComponent->StopFire();
 }
 
 // 血量变化回调函数
