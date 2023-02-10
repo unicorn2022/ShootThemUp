@@ -8,6 +8,19 @@
 
 class ASTUBaseWeapon;
 
+USTRUCT(BlueprintType)
+struct FWeaponData {
+    GENERATED_USTRUCT_BODY()
+
+    // 武器的类别
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    TSubclassOf<ASTUBaseWeapon> WeaponClass;
+
+    // 切换弹夹动画
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    UAnimMontage* ReloadAnimMontage;
+};
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent {
     GENERATED_BODY()
@@ -23,10 +36,13 @@ public:
     // 切换武器
     void NextWeapon();
 
+    // 切换弹夹
+    void Reload();
+
 protected:
-    // 武器的类别
+    // 武器的相关数据: 武器类, 切换弹夹的动画
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-    TArray<TSubclassOf<ASTUBaseWeapon>> WeaponClasses;
+    TArray<FWeaponData> WeaponData;
     // 手持武器绑定的插槽名称
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     FName WeaponEquipSocketName = "WeaponSocket";
@@ -45,10 +61,14 @@ private:
     // 当前武器
     UPROPERTY()
     ASTUBaseWeapon* CurrentWeapon = nullptr;
+    // 当前武器切换弹夹的动画
+    UPROPERTY()
+    UAnimMontage* CurrentReloadAnimMontage = nullptr;
 
     // 所有的武器
     UPROPERTY()
     TArray<ASTUBaseWeapon*> Weapons;
+
 
     // 当前武器指针
     int32 CurrentWeaponIndex = 0;

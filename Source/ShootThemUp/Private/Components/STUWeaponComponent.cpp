@@ -41,9 +41,9 @@ void USTUWeaponComponent::SpawnWeapons() {
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!GetWorld() || !Character) return;
     
-    for (auto WeaponClass : WeaponClasses) {
+    for (auto OneWeaponData : WeaponData) {
         // 生成actor
-        auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
+        auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(OneWeaponData.WeaponClass);
         if (!Weapon) continue;
 
         // 设置武器的所有者
@@ -64,6 +64,11 @@ void USTUWeaponComponent::AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneCom
 
 // 装备武器到角色手上
 void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex) {
+    if (WeaponIndex < 0 || WeaponIndex >= Weapons.Num()) {
+        UE_LOG(LogSTUWeaponComponent, Warning, TEXT("Invalid Weapon Index!!!"));
+        return;
+    }
+
     // 判断角色是否存在 
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!GetWorld() || !Character) return;
@@ -76,6 +81,10 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex) {
 
     // 更换手上的武器
     CurrentWeapon = Weapons[WeaponIndex];
+    const auto CurrentWeaponData = WeaponData.FindByPredicate([&](const FWeaponData& Data) { 
+        return Data.WeaponClass == CurrentWeapon->GetClass(); 
+    });
+    CurrentReloadAnimMontage = CurrentWeaponData ? CurrentWeaponData->ReloadAnimMontage : nullptr;
     AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
     
     // 播放更换武器的动画
@@ -99,6 +108,11 @@ void USTUWeaponComponent::NextWeapon() {
     if (!CanEquip()) return;
     CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
     EquipWeapon(CurrentWeaponIndex);
+}
+
+// 切换弹夹
+void USTUWeaponComponent::Reload() {
+    PlayAnimMontage(CurrentReloadAnimMontage);
 }
 
 // 播放动画蒙太奇
