@@ -10,7 +10,8 @@ void ASTULauncherWeapon::StartFire() {
 }
 
 void ASTULauncherWeapon::MakeShot() {
-    if (!GetWorld()) return;
+    // 判断弹药库是否为空
+    if (!GetWorld() || IsAmmoEmpty()) return;
 
     // 获取榴弹的逻辑路径
     FVector TraceStart, TraceEnd;
@@ -37,4 +38,7 @@ void ASTULauncherWeapon::MakeShot() {
         // 完成榴弹的创建
         Projectile->FinishSpawning(SpawnTransform);
     }
+
+    // 减少弹药数
+    DecreaseAmmo();
 }

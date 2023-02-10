@@ -19,7 +19,9 @@ ASTUBaseWeapon::ASTUBaseWeapon() {
 
 void ASTUBaseWeapon::BeginPlay() {
     Super::BeginPlay();
+    
     check(WeaponMesh);
+    CurrentAmmo = DefaultAmmo;
 }
 
 void ASTUBaseWeapon::StartFire() {}
@@ -73,4 +75,32 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
     
     // 获取子弹路径上，第一个碰撞到的对象，存储到HitResult中
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionQueryParams);
+}
+
+// 每次发射后减少子弹
+void ASTUBaseWeapon::DecreaseAmmo() {
+    CurrentAmmo.Bullets--;
+    LogAmmo();
+
+    if (IsClipEmpty() && !IsAmmoEmpty()) ChangeClip();
+}
+// 判断弹药库是否为空
+bool ASTUBaseWeapon::IsAmmoEmpty() const {
+    return !CurrentAmmo.Infinite && CurrentAmmo.Bullets == 0 && CurrentAmmo.Clips == 0;
+}
+// 判断弹夹是否为空
+bool ASTUBaseWeapon::IsClipEmpty() const {
+    return CurrentAmmo.Bullets == 0;
+}
+// 切换弹夹
+void ASTUBaseWeapon::ChangeClip() {
+    CurrentAmmo.Bullets = DefaultAmmo.Bullets;
+    if (!CurrentAmmo.Infinite) CurrentAmmo.Clips--;
+    UE_LOG(LogSTUBaseWeapon, Display, TEXT("------ Change Clip ------"));
+}
+// 将弹药库信息显示到控制台
+void ASTUBaseWeapon::LogAmmo() const {
+    FString AmmoInfo = "Ammo: " + FString::FromInt(CurrentAmmo.Bullets) + "/";
+    AmmoInfo += CurrentAmmo.Infinite ? "Infinite" : FString::FromInt(CurrentAmmo.Clips);
+    UE_LOG(LogSTUBaseWeapon, Display, TEXT("%s"), *AmmoInfo);
 }

@@ -19,11 +19,18 @@ void ASTURifleWeapon::StopFire() {
 
 // 发射子弹
 void ASTURifleWeapon::MakeShot() {
-    if (!GetWorld()) return;
+    // 判断弹药库是否为空
+    if (!GetWorld() || IsAmmoEmpty()) {
+        StopFire();
+        return;
+    }
 
     // 获取子弹的逻辑路径
     FVector TraceStart, TraceEnd;
-    if (!GetTraceData(TraceStart, TraceEnd)) return;
+    if (!GetTraceData(TraceStart, TraceEnd)) {
+        StopFire();
+        return;
+    }
 
     // 计算子弹的碰撞结果
     FHitResult HitResult;
@@ -44,6 +51,9 @@ void ASTURifleWeapon::MakeShot() {
         // 绘制子弹的路径: 枪口位置 -> 子弹路径的终点
         DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Red, false, 3.0f, 0, 3.0f);
     }
+
+    // 减少弹药数
+    DecreaseAmmo();
 }
 
 // 获取子弹的逻辑路径
