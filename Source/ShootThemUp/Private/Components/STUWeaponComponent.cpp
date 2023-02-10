@@ -3,6 +3,7 @@
 #include "Components/STUWeaponComponent.h"
 #include "Weapon/STUBaseWeapon.h"
 #include "GameFramework/Character.h"
+#include "Animations/STUEquipFinishedAnimNotify.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUWeaponComponent, All, All);
 
@@ -13,6 +14,8 @@ USTUWeaponComponent::USTUWeaponComponent() {
 void USTUWeaponComponent::BeginPlay() {
     Super::BeginPlay();
 
+    // 初始化动画
+    InitAnimation();
     // 生成武器
     SpawnWeapons();
     // 装备武器
@@ -71,8 +74,12 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex) {
         AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponAmorySocketName);
     }
 
+    // 更换手上的武器
     CurrentWeapon = Weapons[WeaponIndex];
     AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
+    
+    // 播放更换武器的动画
+    PlayAnimMontage(EquipAnimMontage);
 }
 
 // 开火
@@ -90,4 +97,36 @@ void USTUWeaponComponent::StopFire() {
 void USTUWeaponComponent::NextWeapon() {
     CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
     EquipWeapon(CurrentWeaponIndex);
+}
+
+// 播放动画蒙太奇
+void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation) {
+    ACharacter* Character = Cast<ACharacter>(GetOwner());
+    if (!Character) return;
+
+    Character->PlayAnimMontage(Animation);
+}
+
+// 初始化动画通知
+void USTUWeaponComponent::InitAnimation() {
+    if (!EquipAnimMontage) return;
+    
+    const auto NotifyEvents = EquipAnimMontage->Notifies;
+    for (auto NotifyEvent : NotifyEvents) {
+        auto EquipFinishedNotify = Cast<USTUEquipFinishedAnimNotify>(NotifyEvent.Notify);
+        if (EquipFinishedNotify) {
+            EquipFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnEquipFinished);
+            break;
+        }
+    }
+
+}
+// 动画通知回调
+void USTUWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent) {
+    ACharacter* Character = Cast<ACharacter>(GetOwner());
+    if (!GetWorld() || !Character) return;
+
+    // 不是当前character, 则不响应该事件
+    if (Character->GetMesh() != MeshComponent) return;
+    UE_LOG(LogSTUWeaponComponent, Display, TEXT("Equip Finished"));
 }

@@ -32,7 +32,11 @@ protected:
     FName WeaponEquipSocketName = "WeaponSocket";
     // 背后武器绑定的插槽名称
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-    FName WeaponAmorySocketName = "AmorySocket";
+    FName WeaponAmorySocketName = "ArmoySocket";
+
+    // 更换装备的动画蒙太奇
+    UPROPERTY(EditDefaultsOnly, Category = "Animation")
+    UAnimMontage* EquipAnimMontage;
 
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -55,4 +59,12 @@ private:
     void AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& SocketName);
     // 装备武器到角色手上
     void EquipWeapon(int32 WeaponIndex);
+
+    // 播放动画蒙太奇
+    void PlayAnimMontage(UAnimMontage* Animation);
+
+    // 初始化动画通知
+    void InitAnimation();
+    // 动画通知回调
+    void OnEquipFinished(USkeletalMeshComponent* MeshComponent);
 };
