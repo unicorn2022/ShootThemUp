@@ -75,6 +75,8 @@ private:
 
     // 是否正在更换武器
     bool EquipAnimInProgress = false;
+    // 是否正在更换弹夹
+    bool ReloadAnimInProgress = false;
 
 private:
     // 生成武器
@@ -88,9 +90,25 @@ private:
     void PlayAnimMontage(UAnimMontage* Animation);
     // 初始化动画通知
     void InitAnimation();
-    // 动画通知回调
+    // 动画通知回调：切换武器
     void OnEquipFinished(USkeletalMeshComponent* MeshComponent);
+    // 动画通知回调：切换弹夹
+    void OnReloadFinished(USkeletalMeshComponent* MeshComponent);
 
     bool CanFire() const;
     bool CanEquip() const;
+    bool CanReload() const;
+
+    template<typename T>
+    T* FindNotifyByClass(UAnimSequenceBase* Animation) {
+        if (!Animation) return nullptr;
+
+        const auto NotifyEvents = Animation->Notifies;
+        for (auto NotifyEvent : NotifyEvents) {
+            auto AnimNotify = Cast<T>(NotifyEvent.Notify);
+            if (AnimNotify) return AnimNotify;
+        }
+
+        return nullptr;
+    }
 };

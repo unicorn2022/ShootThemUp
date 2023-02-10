@@ -4,6 +4,8 @@
 #include "Weapon/STUBaseWeapon.h"
 #include "GameFramework/Character.h"
 #include "Animations/STUEquipFinishedAnimNotify.h"
+#include "Animations/STUReloadFinishedAnimNotify.h"
+
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUWeaponComponent, All, All);
 
@@ -109,9 +111,10 @@ void USTUWeaponComponent::NextWeapon() {
     CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
     EquipWeapon(CurrentWeaponIndex);
 }
-
 // 切换弹夹
 void USTUWeaponComponent::Reload() {
+    if (!CanReload()) return;
+    ReloadAnimInProgress = true;
     PlayAnimMontage(CurrentReloadAnimMontage);
 }
 
@@ -124,19 +127,21 @@ void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation) {
 }
 // 初始化动画通知
 void USTUWeaponComponent::InitAnimation() {
-    if (!EquipAnimMontage) return;
-    
-    const auto NotifyEvents = EquipAnimMontage->Notifies;
-    for (auto NotifyEvent : NotifyEvents) {
-        auto EquipFinishedNotify = Cast<USTUEquipFinishedAnimNotify>(NotifyEvent.Notify);
-        if (EquipFinishedNotify) {
-            EquipFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnEquipFinished);
-            break;
-        }
+    // 订阅动画通知：切换武器
+    auto EquipFinishedNotify = FindNotifyByClass<USTUEquipFinishedAnimNotify>(EquipAnimMontage);
+    if (EquipFinishedNotify) {
+        EquipFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnEquipFinished);
     }
-
+    
+    // 订阅动画通知：切换弹夹
+    for (auto OneWeaponData : WeaponData) {
+        auto ReloadFinishedNotify = FindNotifyByClass<USTUReloadFinishedAnimNotify>(OneWeaponData.ReloadAnimMontage);
+        if (!ReloadFinishedNotify) continue;
+        UE_LOG(LogSTUWeaponComponent, Warning, TEXT("InitAnimation: ReloadFinishedNotify"));
+        ReloadFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnReloadFinished);
+    }
 }
-// 动画通知回调
+// 动画通知回调：切换武器
 void USTUWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent) {
     // 不是当前Character, 则不响应该事件
     ACharacter* Character = Cast<ACharacter>(GetOwner());
@@ -144,12 +149,26 @@ void USTUWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent)
 
     EquipAnimInProgress = false;
 }
+// 动画通知回调：切换弹夹
+void USTUWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComponent) {
+    // 不是当前Character, 则不响应该事件
+    ACharacter* Character = Cast<ACharacter>(GetOwner());
+    if (!Character || Character->GetMesh() != MeshComponent) return;
+
+    UE_LOG(LogSTUWeaponComponent, Warning, TEXT("OnReloadFinished"));
+    ReloadAnimInProgress = false;
+}
+
 
 bool USTUWeaponComponent::CanFire() const {
-    // 有武器且没有正在更换武器
-    return CurrentWeapon && !EquipAnimInProgress;
+    // 有武器 && 没有在更换武器 && 没有在更换弹夹
+    return CurrentWeapon && !EquipAnimInProgress && !ReloadAnimInProgress;
 }
 bool USTUWeaponComponent::CanEquip() const {
-    // 没有正在更换武器
-    return !EquipAnimInProgress;
+    // 没有在更换武器 && 没有在更换弹夹
+    return !EquipAnimInProgress && !ReloadAnimInProgress;
+}
+bool USTUWeaponComponent::CanReload() const {
+    // 有武器 && 没有在更换武器 && 没有在更换弹夹
+    return CurrentWeapon && !EquipAnimInProgress && !ReloadAnimInProgress;
 }
