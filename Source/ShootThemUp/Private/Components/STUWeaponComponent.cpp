@@ -79,12 +79,13 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex) {
     AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
     
     // 播放更换武器的动画
+    EquipAnimInProgress = true;
     PlayAnimMontage(EquipAnimMontage);
 }
 
 // 开火
 void USTUWeaponComponent::StartFire() {
-    if (!CurrentWeapon) return;
+    if (!CanFire()) return;
     CurrentWeapon->StartFire();
 }
 // 停止开火
@@ -95,6 +96,7 @@ void USTUWeaponComponent::StopFire() {
 
 // 切换武器
 void USTUWeaponComponent::NextWeapon() {
+    if (!CanEquip()) return;
     CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
     EquipWeapon(CurrentWeaponIndex);
 }
@@ -106,7 +108,6 @@ void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation) {
 
     Character->PlayAnimMontage(Animation);
 }
-
 // 初始化动画通知
 void USTUWeaponComponent::InitAnimation() {
     if (!EquipAnimMontage) return;
@@ -123,10 +124,18 @@ void USTUWeaponComponent::InitAnimation() {
 }
 // 动画通知回调
 void USTUWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent) {
+    // 不是当前Character, 则不响应该事件
     ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!GetWorld() || !Character) return;
+    if (!Character || Character->GetMesh() != MeshComponent) return;
 
-    // 不是当前character, 则不响应该事件
-    if (Character->GetMesh() != MeshComponent) return;
-    UE_LOG(LogSTUWeaponComponent, Display, TEXT("Equip Finished"));
+    EquipAnimInProgress = false;
+}
+
+bool USTUWeaponComponent::CanFire() const {
+    // 有武器且没有正在更换武器
+    return CurrentWeapon && !EquipAnimInProgress;
+}
+bool USTUWeaponComponent::CanEquip() const {
+    // 没有正在更换武器
+    return !EquipAnimInProgress;
 }

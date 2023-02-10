@@ -53,6 +53,10 @@ private:
     // 当前武器指针
     int32 CurrentWeaponIndex = 0;
 
+    // 是否正在更换武器
+    bool EquipAnimInProgress = false;
+
+private:
     // 生成武器
     void SpawnWeapons();
     // 将武器绑定到角色的某个插槽上
@@ -62,9 +66,11 @@ private:
 
     // 播放动画蒙太奇
     void PlayAnimMontage(UAnimMontage* Animation);
-
     // 初始化动画通知
     void InitAnimation();
     // 动画通知回调
     void OnEquipFinished(USkeletalMeshComponent* MeshComponent);
+
+    bool CanFire() const;
+    bool CanEquip() const;
 };
