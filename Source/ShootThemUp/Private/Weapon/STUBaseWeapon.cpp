@@ -19,7 +19,7 @@ ASTUBaseWeapon::ASTUBaseWeapon() {
 
 void ASTUBaseWeapon::BeginPlay() {
     Super::BeginPlay();
-    
+
     check(WeaponMesh);
     checkf(DefaultAmmo.Bullets > 0, TEXT("Bullets can't be <= 0"));
     checkf(DefaultAmmo.Clips > 0, TEXT("Clips can't be <= 0"));
@@ -30,14 +30,14 @@ void ASTUBaseWeapon::StartFire() {}
 void ASTUBaseWeapon::StopFire() {}
 void ASTUBaseWeapon::MakeShot() {}
 
-// »ñÈ¡Íæ¼Ò¿ØÖÆÆ÷
+// è·å–ç©å®¶æ§åˆ¶å™¨
 APlayerController* ASTUBaseWeapon::GetPlayerController() const {
     const auto Player = Cast<ACharacter>(GetOwner());
     if (!Player) return nullptr;
     return Player->GetController<APlayerController>();
 }
 
-// »ñÈ¡Íæ¼ÒµÄÎ»ÖÃºÍ³¯Ïò
+// è·å–ç©å®¶çš„ä½ç½®å’Œæœå‘
 bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const {
     const auto Controller = GetPlayerController();
     if (!Controller) return false;
@@ -46,61 +46,60 @@ bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRot
     return true;
 }
 
-// »ñÈ¡Ç¹¿ÚµÄÎ»ÖÃ
+// è·å–æªå£çš„ä½ç½®
 FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const {
     return WeaponMesh->GetSocketLocation(MuzzleSocketName);
 }
 
-// »ñÈ¡×Óµ¯µÄÂß¼­Â·¾¶
+// è·å–å­å¼¹çš„é€»è¾‘è·¯å¾„
 bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const {
-    // »ñÈ¡Íæ¼ÒµÄÎ»ÖÃºÍ³¯Ïò
+    // è·å–ç©å®¶çš„ä½ç½®å’Œæœå‘
     FVector ViewLocation;
     FRotator ViewRotation;
     if (!GetPlayerViewPoint(ViewLocation, ViewRotation)) return false;
 
-    // ×Óµ¯µÄÆğµãÎª: ½ÇÉ«µ±Ç°Î»ÖÃ
+    // å­å¼¹çš„èµ·ç‚¹ä¸º: è§’è‰²å½“å‰ä½ç½®
     TraceStart = ViewLocation;
-    // ×Óµ¯µÄ·½ÏòÎª: ½ÇÉ«µ±Ç°ÕıÇ°·½
+    // å­å¼¹çš„æ–¹å‘ä¸º: è§’è‰²å½“å‰æ­£å‰æ–¹
     const FVector ShootDirection = ViewRotation.Vector();
-    // ×Óµ¯µÄÖÕµãÎª: ½ÇÉ«µ±Ç°Î»ÖÃÑØ×Óµ¯·½ÏòÔË¶¯Ò»¶¨µÄ¾àÀë
+    // å­å¼¹çš„ç»ˆç‚¹ä¸º: è§’è‰²å½“å‰ä½ç½®æ²¿å­å¼¹æ–¹å‘è¿åŠ¨ä¸€å®šçš„è·ç¦»
     TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
     return true;
 }
 
-// Ö´ĞĞÅö×²Âß¼­
+// æ‰§è¡Œç¢°æ’é€»è¾‘
 void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd) const {
     if (!GetWorld()) return;
-    
-    // ºöÂÔ×Ô¼º
+
+    // å¿½ç•¥è‡ªå·±
     FCollisionQueryParams CollisionQueryParams;
-    CollisionQueryParams.AddIgnoredActor(GetOwner());  
-    
-    // »ñÈ¡×Óµ¯Â·¾¶ÉÏ£¬µÚÒ»¸öÅö×²µ½µÄ¶ÔÏó£¬´æ´¢µ½HitResultÖĞ
+    CollisionQueryParams.AddIgnoredActor(GetOwner());
+
+    // è·å–å­å¼¹è·¯å¾„ä¸Šï¼Œç¬¬ä¸€ä¸ªç¢°æ’åˆ°çš„å¯¹è±¡ï¼Œå­˜å‚¨åˆ°HitResultä¸­
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionQueryParams);
 }
 
-// Ã¿´Î·¢Éäºó¼õÉÙ×Óµ¯
+// æ¯æ¬¡å‘å°„åå‡å°‘å­å¼¹
 void ASTUBaseWeapon::DecreaseAmmo() {
     CurrentAmmo.Bullets--;
-    LogAmmo();
 
     if (IsClipEmpty() && !IsAmmoEmpty()) ChangeClip();
 }
-// ÅĞ¶Ïµ¯Ò©¿âÊÇ·ñÎª¿Õ
+// åˆ¤æ–­å¼¹è¯åº“æ˜¯å¦ä¸ºç©º
 bool ASTUBaseWeapon::IsAmmoEmpty() const {
     return !CurrentAmmo.Infinite && CurrentAmmo.Bullets == 0 && CurrentAmmo.Clips == 0;
 }
-// ÅĞ¶Ïµ¯¼ĞÊÇ·ñÎª¿Õ
+// åˆ¤æ–­å¼¹å¤¹æ˜¯å¦ä¸ºç©º
 bool ASTUBaseWeapon::IsClipEmpty() const {
     return CurrentAmmo.Bullets == 0;
 }
-// ÇĞ»»µ¯¼Ğ
+// åˆ‡æ¢å¼¹å¤¹
 void ASTUBaseWeapon::ChangeClip() {
     CurrentAmmo.Bullets = DefaultAmmo.Bullets;
     if (!CurrentAmmo.Infinite) CurrentAmmo.Clips--;
     UE_LOG(LogSTUBaseWeapon, Display, TEXT("------ Change Clip ------"));
 }
-// ½«µ¯Ò©¿âĞÅÏ¢ÏÔÊ¾µ½¿ØÖÆÌ¨
+// å°†å¼¹è¯åº“ä¿¡æ¯æ˜¾ç¤ºåˆ°æ§åˆ¶å°
 void ASTUBaseWeapon::LogAmmo() const {
     FString AmmoInfo = "Ammo: " + FString::FromInt(CurrentAmmo.Bullets) + "/";
     AmmoInfo += CurrentAmmo.Infinite ? "Infinite" : FString::FromInt(CurrentAmmo.Clips);
