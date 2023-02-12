@@ -9,7 +9,6 @@
 
 class ASTUBaseWeapon;
 
-
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent {
     GENERATED_BODY()
@@ -17,29 +16,32 @@ class SHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent {
 public:
     USTUWeaponComponent();
 
-    // ¿ª»ğ
+    // å¼€ç«
     void StartFire();
-    // Í£Ö¹¿ª»ğ
+    // åœæ­¢å¼€ç«
     void StopFire();
 
-    // ÇĞ»»ÎäÆ÷
+    // åˆ‡æ¢æ­¦å™¨
     void NextWeapon();
 
-    // ÇĞ»»µ¯¼Ğ
+    // åˆ‡æ¢å¼¹å¤¹
     void Reload();
 
+    // è·å–æ­¦å™¨UIæ•°æ®
+    bool GetWeaponUIData(FWeaponUIData& UIData) const;
+
 protected:
-    // ÎäÆ÷µÄÏà¹ØÊı¾İ: ÎäÆ÷Àà, ÇĞ»»µ¯¼ĞµÄ¶¯»­
+    // æ­¦å™¨çš„ç›¸å…³æ•°æ®: æ­¦å™¨ç±», åˆ‡æ¢å¼¹å¤¹çš„åŠ¨ç”»
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     TArray<FWeaponData> WeaponData;
-    // ÊÖ³ÖÎäÆ÷°ó¶¨µÄ²å²ÛÃû³Æ
+    // æ‰‹æŒæ­¦å™¨ç»‘å®šçš„æ’æ§½åç§°
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     FName WeaponEquipSocketName = "WeaponSocket";
-    // ±³ºóÎäÆ÷°ó¶¨µÄ²å²ÛÃû³Æ
+    // èƒŒåæ­¦å™¨ç»‘å®šçš„æ’æ§½åç§°
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     FName WeaponAmorySocketName = "ArmoySocket";
 
-    // ¸ü»»×°±¸µÄ¶¯»­ÃÉÌ«Ææ
+    // æ›´æ¢è£…å¤‡çš„åŠ¨ç”»è’™å¤ªå¥‡
     UPROPERTY(EditDefaultsOnly, Category = "Animation")
     UAnimMontage* EquipAnimMontage;
 
@@ -47,41 +49,40 @@ protected:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
-    // µ±Ç°ÎäÆ÷
+    // å½“å‰æ­¦å™¨
     UPROPERTY()
     ASTUBaseWeapon* CurrentWeapon = nullptr;
-    // µ±Ç°ÎäÆ÷ÇĞ»»µ¯¼ĞµÄ¶¯»­
+    // å½“å‰æ­¦å™¨åˆ‡æ¢å¼¹å¤¹çš„åŠ¨ç”»
     UPROPERTY()
     UAnimMontage* CurrentReloadAnimMontage = nullptr;
 
-    // ËùÓĞµÄÎäÆ÷
+    // æ‰€æœ‰çš„æ­¦å™¨
     UPROPERTY()
     TArray<ASTUBaseWeapon*> Weapons;
 
-
-    // µ±Ç°ÎäÆ÷Ö¸Õë
+    // å½“å‰æ­¦å™¨æŒ‡é’ˆ
     int32 CurrentWeaponIndex = 0;
 
-    // ÊÇ·ñÕıÔÚ¸ü»»ÎäÆ÷
+    // æ˜¯å¦æ­£åœ¨æ›´æ¢æ­¦å™¨
     bool EquipAnimInProgress = false;
-    // ÊÇ·ñÕıÔÚ¸ü»»µ¯¼Ğ
+    // æ˜¯å¦æ­£åœ¨æ›´æ¢å¼¹å¤¹
     bool ReloadAnimInProgress = false;
 
 private:
-    // Éú³ÉÎäÆ÷
+    // ç”Ÿæˆæ­¦å™¨
     void SpawnWeapons();
-    // ½«ÎäÆ÷°ó¶¨µ½½ÇÉ«µÄÄ³¸ö²å²ÛÉÏ
+    // å°†æ­¦å™¨ç»‘å®šåˆ°è§’è‰²çš„æŸä¸ªæ’æ§½ä¸Š
     void AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& SocketName);
-    // ×°±¸ÎäÆ÷µ½½ÇÉ«ÊÖÉÏ
+    // è£…å¤‡æ­¦å™¨åˆ°è§’è‰²æ‰‹ä¸Š
     void EquipWeapon(int32 WeaponIndex);
 
-    // ²¥·Å¶¯»­ÃÉÌ«Ææ
+    // æ’­æ”¾åŠ¨ç”»è’™å¤ªå¥‡
     void PlayAnimMontage(UAnimMontage* Animation);
-    // ³õÊ¼»¯¶¯»­Í¨Öª
+    // åˆå§‹åŒ–åŠ¨ç”»é€šçŸ¥
     void InitAnimation();
-    // ¶¯»­Í¨Öª»Øµ÷£ºÇĞ»»ÎäÆ÷
+    // åŠ¨ç”»é€šçŸ¥å›è°ƒï¼šåˆ‡æ¢æ­¦å™¨
     void OnEquipFinished(USkeletalMeshComponent* MeshComponent);
-    // ¶¯»­Í¨Öª»Øµ÷£ºÇĞ»»µ¯¼Ğ
+    // åŠ¨ç”»é€šçŸ¥å›è°ƒï¼šåˆ‡æ¢å¼¹å¤¹
     void OnReloadFinished(USkeletalMeshComponent* MeshComponent);
 
     bool CanFire() const;

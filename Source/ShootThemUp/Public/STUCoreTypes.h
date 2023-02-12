@@ -10,15 +10,15 @@ USTRUCT(BlueprintType)
 struct FAmmoData {
     GENERATED_USTRUCT_BODY()
 
-    // ×Óµ¯ÊıÁ¿
+    // å­å¼¹æ•°é‡
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     int32 Bullets;
 
-    // µ¯¼ĞÊıÁ¿
+    // å¼¹å¤¹æ•°é‡
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", meta = (EditCondition = "!Infinite"))
     int32 Clips;
 
-    // µ¯¼ĞÊÇ·ñÎªÎŞÏŞµÄ
+    // å¼¹å¤¹æ˜¯å¦ä¸ºæ— é™çš„
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     bool Infinite;
 };
@@ -27,13 +27,26 @@ USTRUCT(BlueprintType)
 struct FWeaponData {
     GENERATED_USTRUCT_BODY()
 
-    // ÎäÆ÷µÄÀà±ğ
+    // æ­¦å™¨çš„ç±»åˆ«
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     TSubclassOf<ASTUBaseWeapon> WeaponClass;
 
-    // ÇĞ»»µ¯¼Ğ¶¯»­
+    // åˆ‡æ¢å¼¹å¤¹åŠ¨ç”»
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     UAnimMontage* ReloadAnimMontage;
+};
+
+USTRUCT(BlueprintType)
+struct FWeaponUIData {
+    GENERATED_USTRUCT_BODY()
+
+    // æ­¦å™¨çš„å›¾æ ‡
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    UTexture2D* MainIcon;
+    
+    // æ­¦å™¨çš„ç„å‡†çº¿å›¾æ ‡
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    UTexture2D* CrossHairIcon;
 };
 
 /* Health */

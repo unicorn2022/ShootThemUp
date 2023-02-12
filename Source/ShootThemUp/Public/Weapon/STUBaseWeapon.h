@@ -21,11 +21,12 @@ public:
     // 停止开火
     virtual void StopFire();
 
+    FWeaponUIData GetUIData() const { return UIData; }
+
 protected:
     // 武器的骨骼网格体
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USkeletalMeshComponent* WeaponMesh;
-    virtual void BeginPlay() override;
 
     // 武器枪口的插槽名称
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
@@ -39,7 +40,12 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FAmmoData DefaultAmmo{15, 10, false};
 
+    // 武器的显示UI
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    FWeaponUIData UIData;
+
 protected:
+    virtual void BeginPlay() override;
     // 发射子弹
     virtual void MakeShot();
     // 获取玩家控制器

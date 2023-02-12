@@ -20,17 +20,17 @@ void USTUWeaponComponent::BeginPlay() {
 
     checkf(WeaponData.Num() == WeaponNum, TEXT("Our character can only hold %i weapons"), WeaponNum);
 
-    // ³õÊ¼»¯¶¯»­
+    // åˆå§‹åŒ–åŠ¨ç”»
     InitAnimation();
-    // Éú³ÉÎäÆ÷
+    // ç”Ÿæˆæ­¦å™¨
     SpawnWeapons();
-    // ×°±¸ÎäÆ÷
+    // è£…å¤‡æ­¦å™¨
     CurrentWeaponIndex = 0;
     EquipWeapon(CurrentWeaponIndex);
 }
 
 void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) {
-    // Ïú»ÙËùÓĞÎäÆ÷
+    // é”€æ¯æ‰€æœ‰æ­¦å™¨
     CurrentWeapon = nullptr;
     for (auto Weapon : Weapons) {
         Weapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
@@ -41,97 +41,96 @@ void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) {
     Super::EndPlay(EndPlayReason);
 }
 
-// Éú³ÉÎäÆ÷
+// ç”Ÿæˆæ­¦å™¨
 void USTUWeaponComponent::SpawnWeapons() {
-    // ÅĞ¶Ï½ÇÉ«ÊÇ·ñ´æÔÚ
+    // åˆ¤æ–­è§’è‰²æ˜¯å¦å­˜åœ¨
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!GetWorld() || !Character) return;
-    
+
     for (auto OneWeaponData : WeaponData) {
-        // Éú³Éactor
+        // ç”Ÿæˆactor
         auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(OneWeaponData.WeaponClass);
         if (!Weapon) continue;
 
-        // ÉèÖÃÎäÆ÷µÄËùÓĞÕß
-        Weapon->SetOwner(Character); 
+        // è®¾ç½®æ­¦å™¨çš„æ‰€æœ‰è€…
+        Weapon->SetOwner(Character);
         Weapons.Add(Weapon);
 
-        // ½«ÎäÆ÷°ó¶¨µ½½ÇÉ«µÄÄ³¸ö²å²ÛÉÏ
+        // å°†æ­¦å™¨ç»‘å®šåˆ°è§’è‰²çš„æŸä¸ªæ’æ§½ä¸Š
         AttachWeaponToSocket(Weapon, Character->GetMesh(), WeaponAmorySocketName);
     }
 }
 
-// ½«ÎäÆ÷°ó¶¨µ½½ÇÉ«µÄÄ³¸ö²å²ÛÉÏ
+// å°†æ­¦å™¨ç»‘å®šåˆ°è§’è‰²çš„æŸä¸ªæ’æ§½ä¸Š
 void USTUWeaponComponent::AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& SocketName) {
     if (!Weapon || !SceneComponent) return;
     FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
     Weapon->AttachToComponent(SceneComponent, AttachmentRules, SocketName);
 }
 
-// ×°±¸ÎäÆ÷µ½½ÇÉ«ÊÖÉÏ
+// è£…å¤‡æ­¦å™¨åˆ°è§’è‰²æ‰‹ä¸Š
 void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex) {
     if (WeaponIndex < 0 || WeaponIndex >= Weapons.Num()) {
         UE_LOG(LogSTUWeaponComponent, Warning, TEXT("Invalid Weapon Index!!!"));
         return;
     }
 
-    // ÅĞ¶Ï½ÇÉ«ÊÇ·ñ´æÔÚ 
+    // åˆ¤æ–­è§’è‰²æ˜¯å¦å­˜åœ¨
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!GetWorld() || !Character) return;
 
-    // Èç¹ûÒÑ¾­ÓĞÎäÆ÷, ½«µ±Ç°ÎäÆ÷×ªÒÆµ½±³ºó
+    // å¦‚æœå·²ç»æœ‰æ­¦å™¨, å°†å½“å‰æ­¦å™¨è½¬ç§»åˆ°èƒŒå
     if (CurrentWeapon) {
         CurrentWeapon->StopFire();
         AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponAmorySocketName);
     }
 
-    // ¸ü»»ÊÖÉÏµÄÎäÆ÷
+    // æ›´æ¢æ‰‹ä¸Šçš„æ­¦å™¨
     CurrentWeapon = Weapons[WeaponIndex];
-    const auto CurrentWeaponData = WeaponData.FindByPredicate([&](const FWeaponData& Data) { 
-        return Data.WeaponClass == CurrentWeapon->GetClass(); 
-    });
+    const auto CurrentWeaponData =
+        WeaponData.FindByPredicate([&](const FWeaponData& Data) { return Data.WeaponClass == CurrentWeapon->GetClass(); });
     CurrentReloadAnimMontage = CurrentWeaponData ? CurrentWeaponData->ReloadAnimMontage : nullptr;
     AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
-    
-    // ²¥·Å¸ü»»ÎäÆ÷µÄ¶¯»­
+
+    // æ’­æ”¾æ›´æ¢æ­¦å™¨çš„åŠ¨ç”»
     EquipAnimInProgress = true;
     PlayAnimMontage(EquipAnimMontage);
 }
 
-// ¿ª»ğ
+// å¼€ç«
 void USTUWeaponComponent::StartFire() {
     if (!CanFire()) return;
     CurrentWeapon->StartFire();
 }
-// Í£Ö¹¿ª»ğ
+// åœæ­¢å¼€ç«
 void USTUWeaponComponent::StopFire() {
     if (!CurrentWeapon) return;
     CurrentWeapon->StopFire();
 }
 
-// ÇĞ»»ÎäÆ÷
+// åˆ‡æ¢æ­¦å™¨
 void USTUWeaponComponent::NextWeapon() {
     if (!CanEquip()) return;
     CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
     EquipWeapon(CurrentWeaponIndex);
 }
-// ÇĞ»»µ¯¼Ğ
+// åˆ‡æ¢å¼¹å¤¹
 void USTUWeaponComponent::Reload() {
     if (!CanReload()) return;
     ReloadAnimInProgress = true;
     PlayAnimMontage(CurrentReloadAnimMontage);
 }
 
-// ²¥·Å¶¯»­ÃÉÌ«Ææ
+// æ’­æ”¾åŠ¨ç”»è’™å¤ªå¥‡
 void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation) {
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!Character) return;
 
     Character->PlayAnimMontage(Animation);
 }
-// ³õÊ¼»¯¶¯»­Í¨Öª
+// åˆå§‹åŒ–åŠ¨ç”»é€šçŸ¥
 void USTUWeaponComponent::InitAnimation() {
-    // ¶©ÔÄ¶¯»­Í¨Öª£ºÇĞ»»ÎäÆ÷
+    // è®¢é˜…åŠ¨ç”»é€šçŸ¥ï¼šåˆ‡æ¢æ­¦å™¨
     auto EquipFinishedNotify = AnimUtils::FindNotifyByClass<USTUEquipFinishedAnimNotify>(EquipAnimMontage);
     if (EquipFinishedNotify) {
         EquipFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnEquipFinished);
@@ -139,45 +138,51 @@ void USTUWeaponComponent::InitAnimation() {
         UE_LOG(LogSTUWeaponComponent, Error, TEXT("Equip animation notify is forgotten to set"));
         checkNoEntry();
     }
-    
-    // ¶©ÔÄ¶¯»­Í¨Öª£ºÇĞ»»µ¯¼Ğ
+
+    // è®¢é˜…åŠ¨ç”»é€šçŸ¥ï¼šåˆ‡æ¢å¼¹å¤¹
     for (auto OneWeaponData : WeaponData) {
         auto ReloadFinishedNotify = AnimUtils::FindNotifyByClass<USTUReloadFinishedAnimNotify>(OneWeaponData.ReloadAnimMontage);
         if (!ReloadFinishedNotify) {
             UE_LOG(LogSTUWeaponComponent, Error, TEXT("Reload animation notify is forgotten to set"));
             checkNoEntry();
         }
-        UE_LOG(LogSTUWeaponComponent, Display, TEXT("¶©ÔÄ ReloadFinished ÊÂ¼ş"));
+        UE_LOG(LogSTUWeaponComponent, Display, TEXT("è®¢é˜… ReloadFinished äº‹ä»¶"));
         ReloadFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnReloadFinished);
     }
 }
-// ¶¯»­Í¨Öª»Øµ÷£ºÇĞ»»ÎäÆ÷
+// åŠ¨ç”»é€šçŸ¥å›è°ƒï¼šåˆ‡æ¢æ­¦å™¨
 void USTUWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent) {
-    // ²»ÊÇµ±Ç°Character, Ôò²»ÏìÓ¦¸ÃÊÂ¼ş
+    // ä¸æ˜¯å½“å‰Character, åˆ™ä¸å“åº”è¯¥äº‹ä»¶
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!Character || Character->GetMesh() != MeshComponent) return;
 
     EquipAnimInProgress = false;
 }
-// ¶¯»­Í¨Öª»Øµ÷£ºÇĞ»»µ¯¼Ğ
+// åŠ¨ç”»é€šçŸ¥å›è°ƒï¼šåˆ‡æ¢å¼¹å¤¹
 void USTUWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComponent) {
-    // ²»ÊÇµ±Ç°Character, Ôò²»ÏìÓ¦¸ÃÊÂ¼ş
+    // ä¸æ˜¯å½“å‰Character, åˆ™ä¸å“åº”è¯¥äº‹ä»¶
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!Character || Character->GetMesh() != MeshComponent) return;
 
     ReloadAnimInProgress = false;
 }
 
-
 bool USTUWeaponComponent::CanFire() const {
-    // ÓĞÎäÆ÷ && Ã»ÓĞÔÚ¸ü»»ÎäÆ÷ && Ã»ÓĞÔÚ¸ü»»µ¯¼Ğ
+    // æœ‰æ­¦å™¨ && æ²¡æœ‰åœ¨æ›´æ¢æ­¦å™¨ && æ²¡æœ‰åœ¨æ›´æ¢å¼¹å¤¹
     return CurrentWeapon && !EquipAnimInProgress && !ReloadAnimInProgress;
 }
 bool USTUWeaponComponent::CanEquip() const {
-    // Ã»ÓĞÔÚ¸ü»»ÎäÆ÷ && Ã»ÓĞÔÚ¸ü»»µ¯¼Ğ
+    // æ²¡æœ‰åœ¨æ›´æ¢æ­¦å™¨ && æ²¡æœ‰åœ¨æ›´æ¢å¼¹å¤¹
     return !EquipAnimInProgress && !ReloadAnimInProgress;
 }
 bool USTUWeaponComponent::CanReload() const {
-    // ÓĞÎäÆ÷ && Ã»ÓĞÔÚ¸ü»»ÎäÆ÷ && Ã»ÓĞÔÚ¸ü»»µ¯¼Ğ
+    // æœ‰æ­¦å™¨ && æ²¡æœ‰åœ¨æ›´æ¢æ­¦å™¨ && æ²¡æœ‰åœ¨æ›´æ¢å¼¹å¤¹
     return CurrentWeapon && !EquipAnimInProgress && !ReloadAnimInProgress;
+}
+
+// è·å–æ­¦å™¨UIæ•°æ®
+bool USTUWeaponComponent::GetWeaponUIData(FWeaponUIData& UIData) const {
+    if (!CurrentWeapon) return false;
+    UIData = CurrentWeapon->GetUIData();
+    return true;
 }
