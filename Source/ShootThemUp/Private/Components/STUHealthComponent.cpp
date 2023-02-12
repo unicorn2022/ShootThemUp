@@ -21,7 +21,7 @@ void USTUHealthComponent::BeginPlay() {
     // 订阅OnTakeAnyDamage事件
     AActor* ComponentOwner = GetOwner();
     if (ComponentOwner) {
-        UE_LOG(LogSTUHealthComponent, Warning, TEXT("订阅OnTakeAnyDamage事件"));
+        UE_LOG(LogSTUHealthComponent, Display, TEXT("订阅 OnTakeAnyDamage 事件"));
         ComponentOwner->OnTakeAnyDamage.AddDynamic(this, &USTUHealthComponent::OnTakeAnyDamageHandler);
     }
 }

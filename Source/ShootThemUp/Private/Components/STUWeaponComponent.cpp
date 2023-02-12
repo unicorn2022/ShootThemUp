@@ -147,7 +147,7 @@ void USTUWeaponComponent::InitAnimation() {
             UE_LOG(LogSTUWeaponComponent, Error, TEXT("Reload animation notify is forgotten to set"));
             checkNoEntry();
         }
-        UE_LOG(LogSTUWeaponComponent, Warning, TEXT("InitAnimation: ReloadFinishedNotify"));
+        UE_LOG(LogSTUWeaponComponent, Display, TEXT("¶©ÔÄ ReloadFinished ÊÂ¼þ"));
         ReloadFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnReloadFinished);
     }
 }
@@ -165,7 +165,6 @@ void USTUWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComponent
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!Character || Character->GetMesh() != MeshComponent) return;
 
-    UE_LOG(LogSTUWeaponComponent, Warning, TEXT("OnReloadFinished"));
     ReloadAnimInProgress = false;
 }
 

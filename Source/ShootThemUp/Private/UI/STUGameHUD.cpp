@@ -3,10 +3,22 @@
 
 #include "UI/STUGameHUD.h"
 #include "Engine/Canvas.h"
+#include "Blueprint/UserWidget.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogSTUGameHUD, All, All);
 
 void ASTUGameHUD::DrawHUD() {
     Super::DrawHUD();
     DrawCrossHair();
+}
+
+void ASTUGameHUD::BeginPlay() {
+    Super::BeginPlay();
+    UE_LOG(LogSTUGameHUD, Warning, TEXT("PlayerHUDWidgetClass != nullptr : %d"), PlayerHUDWidgetClass != nullptr);
+    auto PlayerHUDWidget = CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass);
+    if (PlayerHUDWidget) {
+        PlayerHUDWidget->AddToViewport();
+    }
 }
 
 // 绘制屏幕中心的十字准线
