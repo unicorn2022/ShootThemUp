@@ -28,7 +28,9 @@ public:
     void Reload();
 
     // 获取武器UI数据
-    bool GetWeaponUIData(FWeaponUIData& UIData) const;
+    bool GetCurrentWeaponUIData(FWeaponUIData& UIData) const;
+    // 获取武器弹药库数据
+    bool GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const;
 
 protected:
     // 武器的相关数据: 武器类, 切换弹夹的动画

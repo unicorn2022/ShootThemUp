@@ -22,6 +22,7 @@ public:
     virtual void StopFire();
 
     FWeaponUIData GetUIData() const { return UIData; }
+    FAmmoData GetAmmoData() const { return CurrentAmmo; }
 
 protected:
     // 武器的骨骼网格体

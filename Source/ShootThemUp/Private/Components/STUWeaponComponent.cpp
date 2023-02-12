@@ -181,8 +181,15 @@ bool USTUWeaponComponent::CanReload() const {
 }
 
 // 获取武器UI数据
-bool USTUWeaponComponent::GetWeaponUIData(FWeaponUIData& UIData) const {
+bool USTUWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& UIData) const {
     if (!CurrentWeapon) return false;
     UIData = CurrentWeapon->GetUIData();
+    return true;
+}
+
+// 获取武器UI数据
+bool USTUWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const {
+    if (!CurrentWeapon) return false;
+    AmmoData = CurrentWeapon->GetAmmoData();
     return true;
 }
