@@ -14,10 +14,18 @@ class SHOOTTHEMUP_API USTUHealthComponent : public UActorComponent
 
 public:	
 	USTUHealthComponent();
+
+    // 获取角色当前生命值
+    UFUNCTION(BlueprintCallable, Category = "Health")
     float GetHealth() const { return Health; }
 
+    // 获取角色当前生命值百分比
+    UFUNCTION(BlueprintCallable, Category = "Health")
+    float GetHealthPercent() const { return Health / MaxHealth; }
+
+
     // 判断角色是否死亡
-    UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintCallable, Category = "Health")
     bool IsDead() const { return FMath::IsNearlyZero(Health); }
 
     // 角色死亡委托
