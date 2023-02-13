@@ -32,6 +32,9 @@ public:
     // 获取武器弹药库数据
     bool GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const;
 
+    // 尝试添加弹药
+    bool TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, int32 ClipsAmount);
+
 protected:
     // 武器的相关数据: 武器类, 切换弹夹的动画
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")

@@ -26,6 +26,7 @@ void ASTUBaseWeapon::BeginPlay() {
     CurrentAmmo = DefaultAmmo;
 }
 
+/* 发射子弹 */
 void ASTUBaseWeapon::StartFire() {}
 void ASTUBaseWeapon::StopFire() {}
 void ASTUBaseWeapon::MakeShot() {}
@@ -79,6 +80,8 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionQueryParams);
 }
 
+
+/* 减少子弹 */
 // 每次发射后减少子弹
 void ASTUBaseWeapon::DecreaseAmmo() {
     CurrentAmmo.Bullets--;
@@ -104,4 +107,32 @@ void ASTUBaseWeapon::LogAmmo() const {
     FString AmmoInfo = "Ammo: " + FString::FromInt(CurrentAmmo.Bullets) + "/";
     AmmoInfo += CurrentAmmo.Infinite ? "Infinite" : FString::FromInt(CurrentAmmo.Clips);
     UE_LOG(LogSTUBaseWeapon, Display, TEXT("%s"), *AmmoInfo);
+}
+
+
+/* 补充弹药 */
+// 判断弹药是否已满
+bool ASTUBaseWeapon::IsAmmoFull() const {
+    return CurrentAmmo.Clips == DefaultAmmo.Clips && CurrentAmmo.Bullets == DefaultAmmo.Bullets;
+}
+// 尝试添加弹药
+bool ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount) {
+    if (CurrentAmmo.Infinite || IsAmmoFull() || ClipsAmount <= 0) return false;
+    LogAmmo();
+
+    const auto NextClipsAmount = CurrentAmmo.Clips + ClipsAmount;
+    // 拾取的弹药可以补全弹药库, 则全部补全
+    if(NextClipsAmount > DefaultAmmo.Clips){
+        UE_LOG(LogSTUBaseWeapon, Display, TEXT("补全弹夹&弹药"));
+        CurrentAmmo.Bullets = DefaultAmmo.Bullets;
+        CurrentAmmo.Clips = DefaultAmmo.Clips;
+    } 
+    // 拾取的弹药不能补全弹药库, 则优先补充弹夹
+    else {
+        UE_LOG(LogSTUBaseWeapon, Display, TEXT("补全弹夹"));
+        CurrentAmmo.Clips = NextClipsAmount;
+        // 如果当前弹夹里面没有子弹了, 则切换弹夹
+        if (CurrentAmmo.Bullets == 0) ChangeClip();
+    }
+    return true;
 }

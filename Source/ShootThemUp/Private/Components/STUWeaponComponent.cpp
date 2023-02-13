@@ -193,3 +193,13 @@ bool USTUWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const {
     AmmoData = CurrentWeapon->GetAmmoData();
     return true;
 }
+
+// 尝试添加弹药
+bool USTUWeaponComponent::TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, int32 ClipsAmount) {
+    for (const auto Weapon : Weapons) {
+        if (Weapon && Weapon->IsA(WeaponType)) {
+            return Weapon->TryToAddAmmo(ClipsAmount);
+        }
+    }
+    return false;
+}
