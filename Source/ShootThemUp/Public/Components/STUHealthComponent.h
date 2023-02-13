@@ -7,13 +7,18 @@
 #include "STUCoreTypes.h"
 #include "STUHealthComponent.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SHOOTTHEMUP_API USTUHealthComponent : public UActorComponent
-{
-	GENERATED_BODY()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+class SHOOTTHEMUP_API USTUHealthComponent : public UActorComponent {
+    GENERATED_BODY()
 
-public:	
-	USTUHealthComponent();
+public:
+    // 角色死亡委托
+    FOnDeath OnDeath;
+    // 角色血量变化委托
+    FOnHealthChanged OnHealthChanged;
+
+public:
+    USTUHealthComponent();
 
     // 获取角色当前生命值
     UFUNCTION(BlueprintCallable, Category = "Health")
@@ -23,16 +28,14 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Health")
     float GetHealthPercent() const { return Health / MaxHealth; }
 
-
     // 判断角色是否死亡
     UFUNCTION(BlueprintCallable, Category = "Health")
     bool IsDead() const { return FMath::IsNearlyZero(Health); }
 
-    // 角色死亡委托
-    FOnDeath OnDeath;
-
-    // 角色血量变化委托
-    FOnHealthChanged OnHealthChanged;
+    // 尝试增加血量
+    bool TryToAddHealth(float HealthAmount);
+    // 判断角色当前血量是否已满
+    bool IsHealthFull() const;
 
 protected:
     // 角色最大血量
@@ -43,11 +46,11 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Heal")
     bool AutoHeal = true;
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Heal", meta = (EditCondition = "AutoHeal"))
-    float HealUpdateTime = 1.0f;    // 每隔1.0s治疗一次
+    float HealUpdateTime = 1.0f;  // 每隔1.0s治疗一次
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Heal", meta = (EditCondition = "AutoHeal"))
-    float HealDelay = 3.0f;         // 初次启动治疗间隔3.0s
+    float HealDelay = 3.0f;  // 初次启动治疗间隔3.0s
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Heal", meta = (EditCondition = "AutoHeal"))
-    float HealModifier = 5.0f;      // 每次治疗恢复5.0血量
+    float HealModifier = 5.0f;  // 每次治疗恢复5.0血量
 
     virtual void BeginPlay() override;
 

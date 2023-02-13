@@ -60,3 +60,16 @@ void USTUHealthComponent::SetHealth(float NewHealth) {
     // 广播OnHealthChanged委托
     OnHealthChanged.Broadcast(Health);
 }
+
+// 尝试增加血量
+bool USTUHealthComponent::TryToAddHealth(float HealthAmount) {
+    // 角色已死亡、血量已满，均不可回血
+    if (IsDead() || IsHealthFull()) return false;
+    
+    SetHealth(Health + HealthAmount);
+    return true;
+}
+// 判断角色当前血量是否已满
+bool USTUHealthComponent::IsHealthFull() const {
+    return FMath::IsNearlyEqual(Health, MaxHealth);
+}
