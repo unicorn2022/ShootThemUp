@@ -3,8 +3,20 @@
 #include "Weapon/STURifleWeapon.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
+#include "Weapon/Components/STUWeaponFXComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTURifleWeapon, All, All);
+
+ASTURifleWeapon::ASTURifleWeapon() {
+    // 创建特效组件
+    WeaponFXComponent = CreateDefaultSubobject<USTUWeaponFXComponent>("WeaponFXComponent");
+}
+
+void ASTURifleWeapon::BeginPlay() {
+    Super::BeginPlay();
+
+    check(WeaponFXComponent);
+}
 
 // 开火, 不同武器会有不同的开火方式
 void ASTURifleWeapon::StartFire() {
@@ -38,14 +50,15 @@ void ASTURifleWeapon::MakeShot() {
     if (HitResult.bBlockingHit) {
         // 对子弹击中的玩家进行伤害
         MakeDamage(HitResult);
-
+        
         // 绘制子弹的路径: 枪口位置 -> 碰撞点
         DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
-        // 在碰撞处绘制一个球
         DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
+        
+        // 播放击中特效
+        WeaponFXComponent->PlayImpactFX(HitResult);
 
-        // 显示碰撞到了哪个骨骼上, 可以通过这个信息对角色造成不同的伤害
-        UE_LOG(LogSTURifleWeapon, Display, TEXT("Fire hit bone: %s"), *HitResult.BoneName.ToString());
+        // UE_LOG(LogSTURifleWeapon, Display, TEXT("Fire hit bone: %s"), *HitResult.BoneName.ToString());
     } else {
         // 绘制子弹的路径: 枪口位置 -> 子弹路径的终点
         DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Red, false, 3.0f, 0, 3.0f);

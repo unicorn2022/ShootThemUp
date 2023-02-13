@@ -5,6 +5,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "Weapon/Components/STUWeaponFXComponent.h"
 
 ASTUProjectile::ASTUProjectile() {
     PrimaryActorTick.bCanEverTick = false;
@@ -20,6 +21,9 @@ ASTUProjectile::ASTUProjectile() {
     MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
     MovementComponent->InitialSpeed = 2000.0f;
     MovementComponent->ProjectileGravityScale = 0.0f;
+
+    // 创建特效组件
+    WeaponFXComponent = CreateDefaultSubobject<USTUWeaponFXComponent>("WeaponFXComponent");
 }
 
 void ASTUProjectile::BeginPlay() {
@@ -27,6 +31,7 @@ void ASTUProjectile::BeginPlay() {
 
     check(MovementComponent);
     check(CollisionComponent);
+    check(WeaponFXComponent);
 
     // 对子弹运动组件进行配置
     MovementComponent->Velocity = ShotDirection * MovementComponent->InitialSpeed;
@@ -60,6 +65,9 @@ void ASTUProjectile::OnProjectileHit(
 
     // 绘制榴弹的爆炸范围
     DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24, FColor::Red, false, 5.0f);
+    
+    // 播放击中特效
+    WeaponFXComponent->PlayImpactFX(Hit);
 
     // 销毁Actor
     Destroy();

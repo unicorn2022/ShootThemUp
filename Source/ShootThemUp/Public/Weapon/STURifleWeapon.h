@@ -6,33 +6,44 @@
 #include "Weapon/STUBaseWeapon.h"
 #include "STURifleWeapon.generated.h"
 
+class USTUWeaponFXComponent;
+
 UCLASS()
 class SHOOTTHEMUP_API ASTURifleWeapon : public ASTUBaseWeapon {
     GENERATED_BODY()
+
 public:
+    ASTURifleWeapon();
+
     virtual void StartFire() override;
     virtual void StopFire() override;
 
 protected:
-    // ×Ô¶¯¿ª»ğµÄÊ±¼ä¼ä¸ô
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    // è‡ªåŠ¨å¼€ç«çš„æ—¶é—´é—´éš”
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     float TimeBetweenShots = 0.1f;
-    // ×Óµ¯µÄËæ»úÆ«ÒÆ½Ç¶È
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    // å­å¼¹çš„éšæœºåç§»è§’åº¦
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     float BulletSpread = 1.5f;
 
-    // ÎäÆ÷Ôì³ÉµÄÉËº¦
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    // æ­¦å™¨é€ æˆçš„ä¼¤å®³
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     float DamageAmount = 10.0f;
 
-    // ·¢Éä×Óµ¯
+    // æ­¦å™¨çš„ç‰¹æ•ˆ
+    UPROPERTY(VisibleAnywhere, Category = "VFX")
+    USTUWeaponFXComponent* WeaponFXComponent;
+       
+protected:
+    virtual void BeginPlay() override;
+    // å‘å°„å­å¼¹
     virtual void MakeShot() override;
-    // »ñÈ¡×Óµ¯µÄÂß¼­Â·¾¶
+    // è·å–å­å¼¹çš„é€»è¾‘è·¯å¾„
     virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const override;
 
 private:
-    // ×Ô¶¯¿ª»ğµÄ¶¨Ê±Æ÷
+    // è‡ªåŠ¨å¼€ç«çš„å®šæ—¶å™¨
     FTimerHandle ShotTimerHandle;
-    // ¶Ô×Óµ¯»÷ÖĞµÄÍæ¼Ò½øĞĞÉËº¦
+    // å¯¹å­å¼¹å‡»ä¸­çš„ç©å®¶è¿›è¡Œä¼¤å®³
     void MakeDamage(const FHitResult& HitResult);
 };
