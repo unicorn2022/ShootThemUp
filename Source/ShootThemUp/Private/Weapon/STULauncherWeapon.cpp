@@ -9,8 +9,8 @@ void ASTULauncherWeapon::StartFire() {
 }
 
 void ASTULauncherWeapon::MakeShot() {
-    // 判断弹药库是否为空
-    if (!GetWorld() || IsAmmoEmpty()) return;
+    // 判断当前弹夹是否为空
+    if (!GetWorld() || IsClipEmpty()) return;
 
     // 获取榴弹的逻辑路径
     FVector TraceStart, TraceEnd;

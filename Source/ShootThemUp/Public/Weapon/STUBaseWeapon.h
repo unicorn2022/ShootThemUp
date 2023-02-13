@@ -16,6 +16,8 @@ class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor {
 public:
     ASTUBaseWeapon();
 
+    // 当前武器可以开火
+    bool CanFire();
     // 开火, 不同武器会有不同的开火方式
     virtual void StartFire();
     // 停止开火

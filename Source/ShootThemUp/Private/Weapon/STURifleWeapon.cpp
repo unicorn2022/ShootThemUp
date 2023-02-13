@@ -1,80 +1,79 @@
 // Shoot Them Up Game, All Rights Reserved
 
-
 #include "Weapon/STURifleWeapon.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTURifleWeapon, All, All);
 
-// ¿ª»ğ, ²»Í¬ÎäÆ÷»áÓĞ²»Í¬µÄ¿ª»ğ·½Ê½
+// å¼€ç«, ä¸åŒæ­¦å™¨ä¼šæœ‰ä¸åŒçš„å¼€ç«æ–¹å¼
 void ASTURifleWeapon::StartFire() {
     MakeShot();
     GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTURifleWeapon::MakeShot, TimeBetweenShots, true);
 }
-// Í£Ö¹¿ª»ğ
+// åœæ­¢å¼€ç«
 void ASTURifleWeapon::StopFire() {
     GetWorldTimerManager().ClearTimer(ShotTimerHandle);
 }
 
-// ·¢Éä×Óµ¯
+// å‘å°„å­å¼¹
 void ASTURifleWeapon::MakeShot() {
-    // ÅĞ¶Ïµ¯Ò©¿âÊÇ·ñÎª¿Õ
-    if (!GetWorld() || IsAmmoEmpty()) {
+    // åˆ¤æ–­å½“å‰å¼¹å¤¹æ˜¯å¦ä¸ºç©º
+    if (!GetWorld() || IsClipEmpty()) {
         StopFire();
         return;
     }
 
-    // »ñÈ¡×Óµ¯µÄÂß¼­Â·¾¶
+    // è·å–å­å¼¹çš„é€»è¾‘è·¯å¾„
     FVector TraceStart, TraceEnd;
     if (!GetTraceData(TraceStart, TraceEnd)) {
         StopFire();
         return;
     }
 
-    // ¼ÆËã×Óµ¯µÄÅö×²½á¹û
+    // è®¡ç®—å­å¼¹çš„ç¢°æ’ç»“æœ
     FHitResult HitResult;
     MakeHit(HitResult, TraceStart, TraceEnd);
 
     if (HitResult.bBlockingHit) {
-        // ¶Ô×Óµ¯»÷ÖĞµÄÍæ¼Ò½øĞĞÉËº¦
+        // å¯¹å­å¼¹å‡»ä¸­çš„ç©å®¶è¿›è¡Œä¼¤å®³
         MakeDamage(HitResult);
 
-        // »æÖÆ×Óµ¯µÄÂ·¾¶: Ç¹¿ÚÎ»ÖÃ -> Åö×²µã
+        // ç»˜åˆ¶å­å¼¹çš„è·¯å¾„: æªå£ä½ç½® -> ç¢°æ’ç‚¹
         DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
-        // ÔÚÅö×²´¦»æÖÆÒ»¸öÇò
+        // åœ¨ç¢°æ’å¤„ç»˜åˆ¶ä¸€ä¸ªçƒ
         DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
 
-        // ÏÔÊ¾Åö×²µ½ÁËÄÄ¸ö¹Ç÷ÀÉÏ, ¿ÉÒÔÍ¨¹ıÕâ¸öĞÅÏ¢¶Ô½ÇÉ«Ôì³É²»Í¬µÄÉËº¦
+        // æ˜¾ç¤ºç¢°æ’åˆ°äº†å“ªä¸ªéª¨éª¼ä¸Š, å¯ä»¥é€šè¿‡è¿™ä¸ªä¿¡æ¯å¯¹è§’è‰²é€ æˆä¸åŒçš„ä¼¤å®³
         UE_LOG(LogSTURifleWeapon, Display, TEXT("Fire hit bone: %s"), *HitResult.BoneName.ToString());
     } else {
-        // »æÖÆ×Óµ¯µÄÂ·¾¶: Ç¹¿ÚÎ»ÖÃ -> ×Óµ¯Â·¾¶µÄÖÕµã
+        // ç»˜åˆ¶å­å¼¹çš„è·¯å¾„: æªå£ä½ç½® -> å­å¼¹è·¯å¾„çš„ç»ˆç‚¹
         DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Red, false, 3.0f, 0, 3.0f);
     }
 
-    // ¼õÉÙµ¯Ò©Êı
+    // å‡å°‘å¼¹è¯æ•°
     DecreaseAmmo();
 }
 
-// »ñÈ¡×Óµ¯µÄÂß¼­Â·¾¶
+// è·å–å­å¼¹çš„é€»è¾‘è·¯å¾„
 bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const {
-    // »ñÈ¡Íæ¼ÒµÄÎ»ÖÃºÍ³¯Ïò
+    // è·å–ç©å®¶çš„ä½ç½®å’Œæœå‘
     FVector ViewLocation;
     FRotator ViewRotation;
     if (!GetPlayerViewPoint(ViewLocation, ViewRotation)) return false;
 
-    // ×Óµ¯µÄÆğµãÎª: ½ÇÉ«µ±Ç°Î»ÖÃ
+    // å­å¼¹çš„èµ·ç‚¹ä¸º: è§’è‰²å½“å‰ä½ç½®
     TraceStart = ViewLocation;
-    // ×Óµ¯µÄ·½ÏòÎª: ½ÇÉ«µ±Ç°ÕıÇ°·½ + Ò»¸öËæ»úµÄÆ«ÒÆ
-    // µ±½ÇÉ«ÑªÁ¿ºÜµÍÊ±, Æ«ÒÆ½Ç¿ÉÒÔ±ä´ó, Ä£Äâ½ÇÉ«´ò²»×¼µÄÇé¿ö
+    // å­å¼¹çš„æ–¹å‘ä¸º: è§’è‰²å½“å‰æ­£å‰æ–¹ + ä¸€ä¸ªéšæœºçš„åç§»
+    // å½“è§’è‰²è¡€é‡å¾ˆä½æ—¶, åç§»è§’å¯ä»¥å˜å¤§, æ¨¡æ‹Ÿè§’è‰²æ‰“ä¸å‡†çš„æƒ…å†µ
     const auto HalfRad = FMath::DegreesToRadians(BulletSpread);
     const FVector ShootDirection = FMath::VRandCone(ViewRotation.Vector(), HalfRad);
-    // ×Óµ¯µÄÖÕµãÎª: ½ÇÉ«µ±Ç°Î»ÖÃÑØ×Óµ¯·½ÏòÔË¶¯Ò»¶¨µÄ¾àÀë
+    // å­å¼¹çš„ç»ˆç‚¹ä¸º: è§’è‰²å½“å‰ä½ç½®æ²¿å­å¼¹æ–¹å‘è¿åŠ¨ä¸€å®šçš„è·ç¦»
     TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
     return true;
 }
 
-// ¶Ô×Óµ¯»÷ÖĞµÄÍæ¼Ò½øĞĞÉËº¦
+// å¯¹å­å¼¹å‡»ä¸­çš„ç©å®¶è¿›è¡Œä¼¤å®³
 void ASTURifleWeapon::MakeDamage(const FHitResult& HitResult) {
     const auto DamageActor = HitResult.GetActor();
     if (!DamageActor) return;

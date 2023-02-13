@@ -27,6 +27,10 @@ void ASTUBaseWeapon::BeginPlay() {
 }
 
 /* 发射子弹 */
+// 当前武器可以开火
+bool ASTUBaseWeapon::CanFire() {
+    return !IsClipEmpty();
+}
 void ASTUBaseWeapon::StartFire() {}
 void ASTUBaseWeapon::StopFire() {}
 void ASTUBaseWeapon::MakeShot() {}
@@ -85,8 +89,6 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
 // 每次发射后减少子弹
 void ASTUBaseWeapon::DecreaseAmmo() {
     CurrentAmmo.Bullets--;
-
-    if (IsClipEmpty() && !IsAmmoEmpty()) ChangeClip();
 }
 // 判断弹药库是否为空
 bool ASTUBaseWeapon::IsAmmoEmpty() const {
@@ -98,6 +100,10 @@ bool ASTUBaseWeapon::IsClipEmpty() const {
 }
 // 切换弹夹
 void ASTUBaseWeapon::ChangeClip() {
+    // 没有剩余弹药, 则直接返回
+    if (IsAmmoEmpty()) return;
+
+    // 更换弹夹, 并减少弹夹数
     CurrentAmmo.Bullets = DefaultAmmo.Bullets;
     if (!CurrentAmmo.Infinite) CurrentAmmo.Clips--;
     UE_LOG(LogSTUBaseWeapon, Display, TEXT("------ Change Clip ------"));
@@ -131,8 +137,6 @@ bool ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount) {
     else {
         UE_LOG(LogSTUBaseWeapon, Display, TEXT("补全弹夹"));
         CurrentAmmo.Clips = NextClipsAmount;
-        // 如果当前弹夹里面没有子弹了, 则切换弹夹
-        if (CurrentAmmo.Bullets == 0) ChangeClip();
     }
     return true;
 }

@@ -165,11 +165,13 @@ void USTUWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComponent
     if (!Character || Character->GetMesh() != MeshComponent) return;
 
     ReloadAnimInProgress = false;
+    // 补充弹药
+    if (CurrentWeapon) CurrentWeapon->ChangeClip();
 }
 
 bool USTUWeaponComponent::CanFire() const {
-    // 有武器 && 没有在更换武器 && 没有在更换弹夹
-    return CurrentWeapon && !EquipAnimInProgress && !ReloadAnimInProgress;
+    // 有武器 && 可以开火 && 没有在更换武器 && 没有在更换弹夹
+    return CurrentWeapon && CurrentWeapon->CanFire() && !EquipAnimInProgress && !ReloadAnimInProgress;
 }
 bool USTUWeaponComponent::CanEquip() const {
     // 没有在更换武器 && 没有在更换弹夹
