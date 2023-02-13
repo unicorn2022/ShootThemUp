@@ -20,6 +20,8 @@ void ASTUBasePickup::BeginPlay() {
     Super::BeginPlay();
 
     check(CollisionComponent);
+
+    GenerateRotationYaw();
 }
 
 // 两个Actor重叠在一起
@@ -35,6 +37,7 @@ void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor) {
 
 void ASTUBasePickup::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
+    AddActorLocalRotation(FRotator(0.0f, RotationYaw, 0.0f));
 }
 
 // 将拾取物给到角色, 用于修改角色属性
@@ -57,9 +60,16 @@ void ASTUBasePickup::PickupWasTaken() {
 
 // 重新生成Actor
 void ASTUBasePickup::Respawn() {
+    GenerateRotationYaw();
     // 开启Actor的碰撞响应
     CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
     // 将Actor设为可见
     if (GetRootComponent()) GetRootComponent()->SetVisibility(true, true);
+}
+
+// 随机生成一个旋转速度
+void ASTUBasePickup::GenerateRotationYaw() {
+    const auto Direction = FMath::RandBool() ? 1.0f : -1.0f;
+    RotationYaw = FMath::RandRange(1.0f, 2.0f) * Direction;
 }

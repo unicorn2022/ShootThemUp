@@ -34,6 +34,11 @@ public:
     virtual void Tick(float DeltaTime) override;
 
 private:
+    // 绕Z轴旋转速度
+    float RotationYaw = 0.0f;
+    // 随机生成一个旋转速度
+    void GenerateRotationYaw();
+
     // 将拾取物给到角色, 用于修改角色属性
     virtual bool GivePickupTo(APawn* PlayerPawn);
     
