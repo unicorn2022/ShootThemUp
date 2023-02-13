@@ -1,6 +1,5 @@
 // Shoot Them Up Game, All Rights Reserved
 
-
 #include "Weapon/STULauncherWeapon.h"
 #include "Weapon/STUProjectile.h"
 #include "Kismet/GameplayStatics.h"
@@ -10,35 +9,34 @@ void ASTULauncherWeapon::StartFire() {
 }
 
 void ASTULauncherWeapon::MakeShot() {
-    // ÅĞ¶Ïµ¯Ò©¿âÊÇ·ñÎª¿Õ
+    // åˆ¤æ–­å¼¹è¯åº“æ˜¯å¦ä¸ºç©º
     if (!GetWorld() || IsAmmoEmpty()) return;
 
-    // »ñÈ¡Áñµ¯µÄÂß¼­Â·¾¶
+    // è·å–æ¦´å¼¹çš„é€»è¾‘è·¯å¾„
     FVector TraceStart, TraceEnd;
     if (!GetTraceData(TraceStart, TraceEnd)) return;
 
-    // ¼ÆËãÁñµ¯µÄÅö×²½á¹û
+    // è®¡ç®—æ¦´å¼¹çš„ç¢°æ’ç»“æœ
     FHitResult HitResult;
     MakeHit(HitResult, TraceStart, TraceEnd);
 
-    // ÅĞ¶ÏÁñµ¯µÄÂäµã
+    // åˆ¤æ–­æ¦´å¼¹çš„è½ç‚¹
     const FVector EndPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : TraceEnd;
-    // ¼ÆËãÁñµ¯µÄÉä»÷·½Ïò(µ¥Î»ÏòÁ¿)
+    // è®¡ç®—æ¦´å¼¹çš„å°„å‡»æ–¹å‘(å•ä½å‘é‡)
     const FVector Direction = (EndPoint - GetMuzzleWorldLocation()).GetSafeNormal();
 
-
-    // Áñµ¯µÄ³õÊ¼Î»ÖÃ
+    // æ¦´å¼¹çš„åˆå§‹ä½ç½®
     const FTransform SpawnTransform(FRotator::ZeroRotator, GetMuzzleWorldLocation());
-    // ÔÚ³¡¾°ÖĞÑÓ³Ù´´½¨Ò»¸öÁñµ¯
+    // åœ¨åœºæ™¯ä¸­å»¶è¿Ÿåˆ›å»ºä¸€ä¸ªæ¦´å¼¹
     ASTUProjectile* Projectile = GetWorld()->SpawnActorDeferred<ASTUProjectile>(ProjectileClass, SpawnTransform);
     if (Projectile) {
-        // ÉèÖÃÁñµ¯µÄ²ÎÊı
+        // è®¾ç½®æ¦´å¼¹çš„å‚æ•°
         Projectile->SetShotDirection(Direction);
         Projectile->SetOwner(GetOwner());
-        // Íê³ÉÁñµ¯µÄ´´½¨
+        // å®Œæˆæ¦´å¼¹çš„åˆ›å»º
         Projectile->FinishSpawning(SpawnTransform);
     }
 
-    // ¼õÉÙµ¯Ò©Êı
+    // å‡å°‘å¼¹è¯æ•°
     DecreaseAmmo();
 }

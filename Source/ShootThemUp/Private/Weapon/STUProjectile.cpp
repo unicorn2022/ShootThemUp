@@ -9,14 +9,14 @@
 ASTUProjectile::ASTUProjectile() {
     PrimaryActorTick.bCanEverTick = false;
 
-    // ´´½¨ÇòĞÎÅö×²Ìå×é¼ş
+    // åˆ›å»ºçƒå½¢ç¢°æ’ä½“ç»„ä»¶
     CollisionComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
     CollisionComponent->InitSphereRadius(5.0f);
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
     SetRootComponent(CollisionComponent);
 
-    // ´´½¨×Óµ¯ÔË¶¯×é¼ş
+    // åˆ›å»ºå­å¼¹è¿åŠ¨ç»„ä»¶
     MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
     MovementComponent->InitialSpeed = 2000.0f;
     MovementComponent->ProjectileGravityScale = 0.0f;
@@ -28,44 +28,44 @@ void ASTUProjectile::BeginPlay() {
     check(MovementComponent);
     check(CollisionComponent);
 
-    // ¶Ô×Óµ¯ÔË¶¯×é¼ş½øĞĞÅäÖÃ
+    // å¯¹å­å¼¹è¿åŠ¨ç»„ä»¶è¿›è¡Œé…ç½®
     MovementComponent->Velocity = ShotDirection * MovementComponent->InitialSpeed;
 
-    // ÉèÖÃÅö×²ÏìÓ¦ÊÂ¼ş
+    // è®¾ç½®ç¢°æ’å“åº”äº‹ä»¶
     CollisionComponent->IgnoreActorWhenMoving(GetOwner(), true);
     CollisionComponent->OnComponentHit.AddDynamic(this, &ASTUProjectile::OnProjectileHit);
 
-    // ÉèÖÃÁñµ¯µÄ´æ»îÖÜÆÚ, ´Ó¶ø×Ô¶¯Ïú»Ù
+    // è®¾ç½®æ¦´å¼¹çš„å­˜æ´»å‘¨æœŸ, ä»è€Œè‡ªåŠ¨é”€æ¯
     SetLifeSpan(LifeSeconds);
 }
 
-// Áñµ¯µÄÅö×²ÏìÓ¦º¯Êı
-void ASTUProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
+// æ¦´å¼¹çš„ç¢°æ’å“åº”å‡½æ•°
+void ASTUProjectile::OnProjectileHit(
+    UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
     if (!GetWorld()) return;
 
-    // Í£Ö¹Áñµ¯µÄÔË¶¯
+    // åœæ­¢æ¦´å¼¹çš„è¿åŠ¨
     MovementComponent->StopMovementImmediately();
 
-    // Ôì³ÉÇòĞÎÉËº¦
-    UGameplayStatics::ApplyRadialDamage(
-        GetWorld(),                     // µ±Ç°ÊÀ½çµÄÖ¸Õë
-        DamageAmount,                   // »ù´¡ÉËº¦
-        GetActorLocation(),             // ÇòĞÎÉËº¦µÄÖĞĞÄ
-        DamageRadius,                   // ÇòĞÎÉËº¦µÄ°ë¾¶
-        UDamageType::StaticClass(),     // ÇòĞÎÉËº¦µÄÀàĞÍ
-        {GetOwner()},                   // ÇòĞÎÉËº¦ºöÂÔµÄactor
-        this,                           // Ôì³ÉÉËº¦µÄactor
-        GetController(),                // Ôì³ÉÉËº¦µÄactorµÄcontroller
-        DoFullDamage);                  // ÊÇ·ñ¶ÔÕû¸ö±¬Õ¨·¶Î§Ôì³ÉÏàÍ¬ÉËº¦
+    // é€ æˆçƒå½¢ä¼¤å®³
+    UGameplayStatics::ApplyRadialDamage(GetWorld(),  // å½“å‰ä¸–ç•Œçš„æŒ‡é’ˆ
+        DamageAmount,                                // åŸºç¡€ä¼¤å®³
+        GetActorLocation(),                          // çƒå½¢ä¼¤å®³çš„ä¸­å¿ƒ
+        DamageRadius,                                // çƒå½¢ä¼¤å®³çš„åŠå¾„
+        UDamageType::StaticClass(),                  // çƒå½¢ä¼¤å®³çš„ç±»å‹
+        {GetOwner()},                                // çƒå½¢ä¼¤å®³å¿½ç•¥çš„actor
+        this,                                        // é€ æˆä¼¤å®³çš„actor
+        GetController(),                             // é€ æˆä¼¤å®³çš„actorçš„controller
+        DoFullDamage);                               // æ˜¯å¦å¯¹æ•´ä¸ªçˆ†ç‚¸èŒƒå›´é€ æˆç›¸åŒä¼¤å®³
 
-    // »æÖÆÁñµ¯µÄ±¬Õ¨·¶Î§
+    // ç»˜åˆ¶æ¦´å¼¹çš„çˆ†ç‚¸èŒƒå›´
     DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24, FColor::Red, false, 5.0f);
 
-    // Ïú»ÙActor
+    // é”€æ¯Actor
     Destroy();
 }
 
-// »ñÈ¡·¢ÉäÁñµ¯µÄpawn
+// è·å–å‘å°„æ¦´å¼¹çš„pawn
 AController* ASTUProjectile::GetController() const {
     const auto Pawn = Cast<APawn>(GetOwner());
     return Pawn ? Pawn->GetController() : nullptr;
