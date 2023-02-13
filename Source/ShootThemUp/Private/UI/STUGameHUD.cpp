@@ -14,7 +14,6 @@ void ASTUGameHUD::DrawHUD() {
 
 void ASTUGameHUD::BeginPlay() {
     Super::BeginPlay();
-    UE_LOG(LogSTUGameHUD, Warning, TEXT("PlayerHUDWidgetClass != nullptr : %d"), PlayerHUDWidgetClass != nullptr);
     auto PlayerHUDWidget = CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass);
     if (PlayerHUDWidget) {
         PlayerHUDWidget->AddToViewport();

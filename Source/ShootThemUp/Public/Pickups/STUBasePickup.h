@@ -20,6 +20,10 @@ protected:
     UPROPERTY(VisibleAnywhere, Category = "Pickup")
     USphereComponent* CollisionComponent;
 
+    // 重新生成的间隔时间
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pickup")
+    float RespawnTime = 5.0f;
+
 protected:
     virtual void BeginPlay() override;
 
@@ -28,4 +32,13 @@ protected:
 
 public:
     virtual void Tick(float DeltaTime) override;
+
+private:
+    // 将拾取物给到角色, 用于修改角色属性
+    virtual bool GivePickupTo(APawn* PlayerPawn);
+    
+    // 当前Actor被拾起
+    void PickupWasTaken();
+    // 重新生成Actor
+    void Respawn();
 };
