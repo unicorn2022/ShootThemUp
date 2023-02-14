@@ -56,7 +56,7 @@ void ASTUBaseCharacter::BeginPlay() {
     // 订阅OnHealthChanged委托
     HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChanged);
     // 先调用一次OnHealthChanged, 获取角色的初始血量
-    OnHealthChanged(HealthComponent->GetHealth());
+    OnHealthChanged(HealthComponent->GetHealth(), 0.0f);
 
     // 订阅LandedDelegate委托
     LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnGroundLanded);
@@ -174,7 +174,7 @@ void ASTUBaseCharacter::OnDeath() {
 }
 
 // 血量变化回调函数
-void ASTUBaseCharacter::OnHealthChanged(float Health) {
+void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta) {
     // 获取角色当前血量并显示
     const FString HealthString = FString::Printf(TEXT("%.0f"), Health);
     HealthTextComponent->SetText(FText::FromString(HealthString));

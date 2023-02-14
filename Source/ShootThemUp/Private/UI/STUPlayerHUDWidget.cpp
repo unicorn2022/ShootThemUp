@@ -37,3 +37,17 @@ bool USTUPlayerHUDWidget::IsPlayerSpectating() const {
     const auto Controller = GetOwningPlayer();
     return Controller && Controller->GetStateName() == NAME_Spectating;
 }
+
+bool USTUPlayerHUDWidget::Initialize() {
+    const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
+    if (HealthComponent) {
+        HealthComponent->OnHealthChanged.AddUObject(this, &USTUPlayerHUDWidget::OnHealthChanged);
+    }
+    return Super::Initialize();
+}
+
+// 玩家血量变化时
+void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta) {
+    // 血量变化值 < 0, 受到伤害
+    if (HealthDelta < 0.0f) OnTakeDamage();
+}

@@ -27,4 +27,14 @@ public:
     // 玩家是否处于观察者模式
     UFUNCTION(BlueprintCallable, Category = "UI")
     bool IsPlayerSpectating() const;
+
+    // 玩家受到伤害时(蓝图中实现)
+    UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+    void OnTakeDamage();
+
+    virtual bool Initialize() override;
+
+private:
+    // 玩家血量变化时
+    void OnHealthChanged(float Health, float HealthDelta);
 };

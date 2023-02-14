@@ -62,9 +62,12 @@ void USTUHealthComponent::HealUpdate() {
 // 设置角色血量
 void USTUHealthComponent::SetHealth(float NewHealth) {
     // 保证Health在合理的范围内
-    Health = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
+    const auto NextHealth = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
+    const auto HealthDelta = NextHealth - Health;
+    Health = NextHealth;
+
     // 广播OnHealthChanged委托
-    OnHealthChanged.Broadcast(Health);
+    OnHealthChanged.Broadcast(Health, HealthDelta);
 }
 
 // 尝试增加血量

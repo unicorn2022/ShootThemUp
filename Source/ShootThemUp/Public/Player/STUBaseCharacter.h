@@ -85,7 +85,7 @@ private:
     // 死亡回调函数
     void OnDeath();
     // 血量变化回调函数
-    void OnHealthChanged(float Health);
+    void OnHealthChanged(float Health, float HealthDelta);
 
     // 坠落回调函数
     UFUNCTION()
