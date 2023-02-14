@@ -8,6 +8,8 @@
 #include "STUBaseWeapon.generated.h"
 
 class USkeletalMeshComponent;
+class UNiagaraSystem;
+class UNiagaraComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor {
@@ -53,6 +55,10 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     FWeaponUIData UIData;
 
+    // 枪口特效
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UNiagaraSystem* MuzzleFX;
+
 protected:
     virtual void BeginPlay() override;
     // 发射子弹
@@ -82,6 +88,9 @@ protected:
 
     // 将弹药库信息显示到控制台
     void LogAmmo() const;
+
+    // 生成枪口特效
+    UNiagaraComponent* SpawnMuzzleFX();
 
 private:
     // 当前弹药库

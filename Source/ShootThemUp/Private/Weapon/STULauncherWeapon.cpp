@@ -39,4 +39,7 @@ void ASTULauncherWeapon::MakeShot() {
 
     // 减少弹药数
     DecreaseAmmo();
+
+    // 生成枪口特效系统, 由于该特效生成一次后就销毁, 因此我们并不需要其指针
+    SpawnMuzzleFX();
 }

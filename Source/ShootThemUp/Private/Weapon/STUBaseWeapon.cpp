@@ -7,6 +7,8 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/Controller.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUBaseWeapon, All, All);
 
@@ -99,6 +101,7 @@ bool ASTUBaseWeapon::IsAmmoEmpty() const {
 bool ASTUBaseWeapon::IsClipEmpty() const {
     return CurrentAmmo.Bullets == 0;
 }
+
 // 切换弹夹
 void ASTUBaseWeapon::ChangeClip() {
     // 没有剩余弹药, 则直接返回
@@ -140,4 +143,15 @@ bool ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount) {
         CurrentAmmo.Clips = NextClipsAmount;
     }
     return true;
+}
+
+// 生成枪口特效
+UNiagaraComponent* ASTUBaseWeapon::SpawnMuzzleFX() {
+    return UNiagaraFunctionLibrary::SpawnSystemAttached(
+        MuzzleFX,
+        WeaponMesh,
+        MuzzleSocketName,
+        FVector::ZeroVector,
+        FRotator::ZeroRotator,
+        EAttachLocation::SnapToTarget, true);
 }

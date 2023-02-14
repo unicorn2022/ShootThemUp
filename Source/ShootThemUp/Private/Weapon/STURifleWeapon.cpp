@@ -4,6 +4,7 @@
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 #include "Weapon/Components/STUWeaponFXComponent.h"
+#include "NiagaraComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTURifleWeapon, All, All);
 
@@ -22,10 +23,12 @@ void ASTURifleWeapon::BeginPlay() {
 void ASTURifleWeapon::StartFire() {
     MakeShot();
     GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTURifleWeapon::MakeShot, TimeBetweenShots, true);
+    InitMuzzleFX();
 }
 // 停止开火
 void ASTURifleWeapon::StopFire() {
     GetWorldTimerManager().ClearTimer(ShotTimerHandle);
+    SetMuzzleFXVisibility(false);
 }
 
 // 发射子弹
@@ -92,4 +95,20 @@ void ASTURifleWeapon::MakeDamage(const FHitResult& HitResult) {
     if (!DamageActor) return;
 
     DamageActor->TakeDamage(DamageAmount, FDamageEvent{}, GetPlayerController(), this);
+}
+
+// 初始化枪口特效组件
+void ASTURifleWeapon::InitMuzzleFX() {
+    if (!MuzzleFXComponent) {
+        MuzzleFXComponent = SpawnMuzzleFX();
+    }
+    SetMuzzleFXVisibility(true);
+}
+
+// 设置特效的可见性
+void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visible) {
+    if (MuzzleFXComponent) {
+        MuzzleFXComponent->SetPaused(!Visible);
+        MuzzleFXComponent->SetVisibility(Visible);
+    }
 }

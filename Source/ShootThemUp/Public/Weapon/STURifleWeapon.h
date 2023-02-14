@@ -7,6 +7,7 @@
 #include "STURifleWeapon.generated.h"
 
 class USTUWeaponFXComponent;
+class UNiagaraComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTURifleWeapon : public ASTUBaseWeapon {
@@ -44,6 +45,16 @@ protected:
 private:
     // 自动开火的定时器
     FTimerHandle ShotTimerHandle;
+    // 枪口特效组件
+    UPROPERTY()
+    UNiagaraComponent* MuzzleFXComponent;
+
+private:
     // 对子弹击中的玩家进行伤害
     void MakeDamage(const FHitResult& HitResult);
+
+    // 初始化枪口特效组件
+    void InitMuzzleFX();
+    // 设置特效的可见性
+    void SetMuzzleFXVisibility(bool Visible);
 };
