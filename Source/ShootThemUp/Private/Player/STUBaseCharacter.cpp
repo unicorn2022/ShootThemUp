@@ -49,6 +49,7 @@ void ASTUBaseCharacter::BeginPlay() {
     check(HealthComponent);
     check(HealthTextComponent);
     check(GetCharacterMovement());
+    check(GetMesh());
 
     // 订阅OnDeath委托
     HealthComponent->OnDeath.AddUObject(this, &ASTUBaseCharacter::OnDeath);
@@ -148,11 +149,14 @@ void ASTUBaseCharacter::OnStopRunning() {
 void ASTUBaseCharacter::OnDeath() {
     UE_LOG(LogSTUBaseCharacter, Warning, TEXT("Player %s is dead"), *GetName());
     // 播放死亡动画蒙太奇
-    PlayAnimMontage(DeathAnimMontage);
+    // PlayAnimMontage(DeathAnimMontage);
+    
     // 禁止角色的移动
     GetCharacterMovement()->DisableMovement();
+    
     // 一段时间后摧毁角色
     SetLifeSpan(LifeSpanOnDeath);
+    
     // 切换状态, 从而将pawn切换为观察者类
     if (Controller) {
         Controller->ChangeState(NAME_Spectating);
@@ -160,8 +164,13 @@ void ASTUBaseCharacter::OnDeath() {
 
     // 禁止胶囊体碰撞
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+    
     // 停止武器组件的开火
     WeaponComponent->StopFire();
+
+    // 启用物理模拟, 实现角色死亡效果
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    GetMesh()->SetSimulatePhysics(true);
 }
 
 // 血量变化回调函数
