@@ -53,7 +53,7 @@ void ASTURifleWeapon::MakeShot() {
         
         // 绘制子弹的路径: 枪口位置 -> 碰撞点
         DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
-        DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
+        // DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
         
         // 播放击中特效
         WeaponFXComponent->PlayImpactFX(HitResult);

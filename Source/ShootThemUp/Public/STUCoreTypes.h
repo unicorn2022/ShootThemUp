@@ -1,7 +1,7 @@
 #pragma once
 #include "STUCoreTypes.generated.h"
 
-/* Weapon */
+/* 武器 */
 class ASTUBaseWeapon;
 
 DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature);
@@ -49,6 +49,45 @@ struct FWeaponUIData {
     UTexture2D* CrossHairIcon;
 };
 
-/* Health */
+/* 血量 */
 DECLARE_MULTICAST_DELEGATE(FOnDeath);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float);
+
+
+/* 特效 */
+
+class UNiagaraSystem;
+
+USTRUCT(BlueprintType)
+struct FDecalData {
+    GENERATED_USTRUCT_BODY()
+
+    // 贴花材质
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UMaterialInterface* Material;
+
+    // 贴花的大小
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    FVector Size = FVector(20.0f);
+
+    // 贴花停留的时间
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    float LifeTime = 5.0f;
+
+    // 贴花淡出的时间
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    float FadeOutTime = 0.7f;
+};
+
+USTRUCT(BlueprintType)
+struct FImpactData {
+    GENERATED_USTRUCT_BODY()
+
+    // Niagara特效
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UNiagaraSystem* NiagaraEffect;
+
+    // 贴花数据
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    FDecalData DecalData;
+};
