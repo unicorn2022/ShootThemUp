@@ -77,11 +77,12 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
     if (!GetWorld()) return;
 
     // 忽略自己
-    FCollisionQueryParams CollisionQueryParams;
-    CollisionQueryParams.AddIgnoredActor(GetOwner());
+    FCollisionQueryParams CollisionParams;
+    CollisionParams.AddIgnoredActor(GetOwner());
+    CollisionParams.bReturnPhysicalMaterial = true;
 
     // 获取子弹路径上，第一个碰撞到的对象，存储到HitResult中
-    GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionQueryParams);
+    GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
 }
 
 
