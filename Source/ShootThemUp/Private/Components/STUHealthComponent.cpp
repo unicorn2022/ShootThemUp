@@ -2,8 +2,11 @@
 
 #include "Components/STUHealthComponent.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
+#include "GameFramework/Controller.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
+#include "Camera/CameraShakeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUHealthComponent, All, All);
 
@@ -42,6 +45,9 @@ void USTUHealthComponent::OnTakeAnyDamageHandler(
     else if (AutoHeal) {
         GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, this, &USTUHealthComponent::HealUpdate, HealUpdateTime, true, HealDelay);
     }
+
+    // 相机抖动
+    PlayCameraShake();
 }
 
 // 角色自动恢复
@@ -72,4 +78,17 @@ bool USTUHealthComponent::TryToAddHealth(float HealthAmount) {
 // 判断角色当前血量是否已满
 bool USTUHealthComponent::IsHealthFull() const {
     return FMath::IsNearlyEqual(Health, MaxHealth);
+}
+
+// 相机抖动
+void USTUHealthComponent::PlayCameraShake() {
+    if (IsDead()) return;
+
+    const auto Player = Cast<APawn>(GetOwner());
+    if (!Player) return;
+
+    const auto Controller = Player->GetController<APlayerController>();
+    if (!Controller || !Controller->PlayerCameraManager) return;
+
+    Controller->PlayerCameraManager->StartCameraShake(CameraShake);
 }
