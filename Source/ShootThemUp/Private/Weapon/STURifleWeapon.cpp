@@ -5,6 +5,7 @@
 #include "DrawDebugHelpers.h"
 #include "Weapon/Components/STUWeaponFXComponent.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTURifleWeapon, All, All);
 
@@ -50,25 +51,23 @@ void ASTURifleWeapon::MakeShot() {
     FHitResult HitResult;
     MakeHit(HitResult, TraceStart, TraceEnd);
 
+    FVector TraceFXEnd = TraceEnd;
     if (HitResult.bBlockingHit) {
         // 对子弹击中的玩家进行伤害
         MakeDamage(HitResult);
         
-        // 绘制子弹的路径: 枪口位置 -> 碰撞点
-        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
-        // DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
+        // 击中时, 子弹路径为: 枪口位置 -> 碰撞点
+        TraceFXEnd = HitResult.ImpactPoint;
         
         // 播放击中特效
         WeaponFXComponent->PlayImpactFX(HitResult);
-
-        // UE_LOG(LogSTURifleWeapon, Display, TEXT("Fire hit bone: %s"), *HitResult.BoneName.ToString());
-    } else {
-        // 绘制子弹的路径: 枪口位置 -> 子弹路径的终点
-        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Red, false, 3.0f, 0, 3.0f);
     }
 
     // 减少弹药数
     DecreaseAmmo();
+
+    // 生成子弹路径特效
+    SpawnTraceFX(GetMuzzleWorldLocation(), TraceFXEnd);
 }
 
 // 获取子弹的逻辑路径
@@ -110,5 +109,15 @@ void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visible) {
     if (MuzzleFXComponent) {
         MuzzleFXComponent->SetPaused(!Visible);
         MuzzleFXComponent->SetVisibility(Visible);
+    }
+}
+
+// 生成子弹路径特效
+void ASTURifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd) {
+    const auto TraceFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TraceFX, TraceStart);
+
+    if (TraceFXComponent) {
+        // DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 3.0f, 0, 3.0f);
+        TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, TraceEnd);
     }
 }

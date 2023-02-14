@@ -8,6 +8,7 @@
 
 class USTUWeaponFXComponent;
 class UNiagaraComponent;
+class UniagaraSystem;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTURifleWeapon : public ASTUBaseWeapon {
@@ -31,9 +32,18 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     float DamageAmount = 10.0f;
 
-    // 武器的特效
+    // 子弹路径特效系统
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UNiagaraSystem* TraceFX;
+    // 子弹路径特效系统中的参数名称
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    FString TraceTargetName = "TraceTarget";
+    
+    
+    // 武器的特效组件
     UPROPERTY(VisibleAnywhere, Category = "VFX")
     USTUWeaponFXComponent* WeaponFXComponent;
+
        
 protected:
     virtual void BeginPlay() override;
@@ -57,4 +67,7 @@ private:
     void InitMuzzleFX();
     // 设置特效的可见性
     void SetMuzzleFXVisibility(bool Visible);
+
+    // 生成子弹路径特效
+    void SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
 };
