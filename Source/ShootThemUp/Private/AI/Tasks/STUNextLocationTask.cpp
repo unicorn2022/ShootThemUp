@@ -22,7 +22,14 @@ EBTNodeResult::Type USTUNextLocationTask::ExecuteTask(UBehaviorTreeComponent& Ow
 
     // 通过NavigationSystem获取一个随机点
     FNavLocation NavLocation;
-    const auto Found = NavSystem->GetRandomReachablePointInRadius(Pawn->GetActorLocation(), Radius, NavLocation);
+    auto Location = Pawn->GetActorLocation();
+    if (!SelfCenter) {
+        auto CenterActor = Cast<AActor>(Blackboard->GetValueAsObject(CenterActorKey.SelectedKeyName));
+        if (!CenterActor) return EBTNodeResult::Type::Failed;
+        Location = CenterActor->GetActorLocation();
+    }
+
+    const auto Found = NavSystem->GetRandomReachablePointInRadius(Location, Radius, NavLocation);
     if (!Found) return EBTNodeResult::Type::Failed;
 
     // 设置Blackboard中的键值
