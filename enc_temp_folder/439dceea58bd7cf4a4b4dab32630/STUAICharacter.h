@@ -18,8 +18,4 @@ public:
     // 角色AI的行为树
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
     UBehaviorTree* BehaviorTreeAsset;
-
-protected:
-    // 死亡回调函数
-    virtual void OnDeath() override;
 };

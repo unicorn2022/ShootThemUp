@@ -56,8 +56,6 @@ protected:
     FVector2D LandedDamageScale = FVector2D(10.0f, 100.0f);
 
     virtual void BeginPlay() override;
-    // 死亡回调函数
-    virtual void OnDeath();
 
 public:
     virtual void Tick(float DeltaTime) override;
@@ -84,6 +82,8 @@ private:
     void OnStartRunning();
     void OnStopRunning();
 
+    // 死亡回调函数
+    void OnDeath();
     // 血量变化回调函数
     void OnHealthChanged(float Health, float HealthDelta);
 
