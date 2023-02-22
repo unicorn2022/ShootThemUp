@@ -12,13 +12,12 @@ USTUFindEnemyService::USTUFindEnemyService() {
 
 void USTUFindEnemyService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) {
     const auto Blackboard = OwnerComp.GetBlackboardComponent();
-    if (!Blackboard) return;
-
     const auto Controller = OwnerComp.GetAIOwner();
     const auto PerceptionComponent = STUUtils::GetSTUPlayerComponent<USTUAIPerceptionComponent>(Controller);
-    if (!PerceptionComponent) return;
 
-    Blackboard->SetValueAsObject(EnemyActorKey.SelectedKeyName, PerceptionComponent->GetClosetEnemy());
+    if (Blackboard && PerceptionComponent) {
+        Blackboard->SetValueAsObject(EnemyActorKey.SelectedKeyName, PerceptionComponent->GetClosetEnemy());
+    }
 
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 }
