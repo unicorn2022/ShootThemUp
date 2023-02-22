@@ -13,7 +13,7 @@ UEnvQueryTest_PickupCouldBeTaken::UEnvQueryTest_PickupCouldBeTaken(const FObject
 }
 
 void UEnvQueryTest_PickupCouldBeTaken::RunTest(FEnvQueryInstance& QueryInstance) const {
-    // »ñµÃµ±Ç°²âÊÔÉèÖÃµÄ²¼¶ûÆ¥ÅäÖµ
+    // è·å¾—å½“å‰æµ‹è¯•è®¾ç½®çš„å¸ƒå°”åŒ¹é…å€¼
     const auto DataOwner = QueryInstance.Owner.Get();
     BoolValue.BindData(DataOwner, QueryInstance.QueryID);
     const bool WantsBeTakable = BoolValue.GetValue();
@@ -23,7 +23,7 @@ void UEnvQueryTest_PickupCouldBeTaken::RunTest(FEnvQueryInstance& QueryInstance)
         const auto PickupActor = Cast<ASTUBasePickup>(ItemActor);
         if (!PickupActor) continue;
 
-        // ÅĞ¶Ïµ±Ç°ActorÊÇ·ñ¿ÉÒÔ±»Ê°È¡
+        // åˆ¤æ–­å½“å‰Actoræ˜¯å¦å¯ä»¥è¢«æ‹¾å–
         const auto CouldBeTaken = PickupActor->CouldBeTaken();
         It.SetScore(TestPurpose, FilterType, CouldBeTaken, WantsBeTakable);
     }
