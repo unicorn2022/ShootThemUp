@@ -46,10 +46,21 @@ APlayerController* ASTUBaseWeapon::GetPlayerController() const {
 
 // 获取玩家的位置和朝向
 bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const {
-    const auto Controller = GetPlayerController();
-    if (!Controller) return false;
+    const auto STUCharacter = Cast<ACharacter>(GetOwner());
+    if (!STUCharacter) return false;
 
-    Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+    // 如果为玩家控制, 则返回玩家的朝向
+    if (STUCharacter->IsPlayerControlled()) {
+        const auto Controller = GetPlayerController();
+        if (!Controller) return false;
+        Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+    } 
+    // 如果为AI控制, 则返回枪口的朝向
+    else {
+        ViewLocation = GetMuzzleWorldLocation();
+        ViewRotation = WeaponMesh->GetSocketRotation(MuzzleSocketName);
+    }
+
     return true;
 }
 
