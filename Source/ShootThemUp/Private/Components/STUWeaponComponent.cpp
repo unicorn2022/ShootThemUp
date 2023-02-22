@@ -205,3 +205,13 @@ bool USTUWeaponComponent::TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, i
     }
     return false;
 }
+
+// 判断是否需要拾取弹药
+bool USTUWeaponComponent::NeedAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType) {
+    for (const auto Weapon : Weapons) {
+        if (Weapon && Weapon->IsA(WeaponType)) {
+            return !Weapon->IsAmmoFull();
+        }
+    }
+    return false;
+}

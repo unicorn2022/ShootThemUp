@@ -35,6 +35,9 @@ public:
     // 尝试添加弹药
     bool TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, int32 ClipsAmount);
 
+    // 判断是否需要拾取弹药
+    bool NeedAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType);
+
 protected:
     // 武器的相关数据: 武器类, 切换弹夹的动画
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
