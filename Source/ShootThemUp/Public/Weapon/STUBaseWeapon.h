@@ -33,6 +33,12 @@ public:
 
     // 尝试添加弹药
     bool TryToAddAmmo(int32 ClipsAmount);
+    // 判断弹药库是否为空
+    bool IsAmmoEmpty() const;
+    // 判断弹夹是否为空
+    bool IsClipEmpty() const;
+    // 判断是否有剩余弹夹
+    bool HasClip() const;
 
 protected:
     // 武器的骨骼网格体
@@ -79,10 +85,6 @@ protected:
 protected:
     // 每次发射后减少弹药
     void DecreaseAmmo();
-    // 判断弹药库是否为空
-    bool IsAmmoEmpty() const;
-    // 判断弹夹是否为空
-    bool IsClipEmpty() const;
     // 判断弹药是否已满
     bool IsAmmoFull() const;
 

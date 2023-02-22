@@ -178,8 +178,8 @@ bool USTUWeaponComponent::CanEquip() const {
     return !EquipAnimInProgress && !ReloadAnimInProgress;
 }
 bool USTUWeaponComponent::CanReload() const {
-    // 有武器 && 没有在更换武器 && 没有在更换弹夹
-    return CurrentWeapon && !EquipAnimInProgress && !ReloadAnimInProgress;
+    // 有武器 && 没有在更换武器 && 没有在更换弹夹 && 当前武器仍有剩余弹夹
+    return CurrentWeapon && !EquipAnimInProgress && !ReloadAnimInProgress && CurrentWeapon->HasClip();
 }
 
 // 获取武器UI数据

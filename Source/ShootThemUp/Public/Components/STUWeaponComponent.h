@@ -17,12 +17,12 @@ public:
     USTUWeaponComponent();
 
     // 开火
-    void StartFire();
+    virtual void StartFire();
     // 停止开火
     void StopFire();
 
     // 切换武器
-    void NextWeapon();
+    virtual void NextWeapon();
 
     // 切换弹夹
     void Reload();
@@ -53,21 +53,20 @@ protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-private:
+protected:
+    // 所有的武器
+    UPROPERTY()
+    TArray<ASTUBaseWeapon*> Weapons;
     // 当前武器
     UPROPERTY()
     ASTUBaseWeapon* CurrentWeapon = nullptr;
+    // 当前武器指针
+    int32 CurrentWeaponIndex = 0;
     // 当前武器切换弹夹的动画
     UPROPERTY()
     UAnimMontage* CurrentReloadAnimMontage = nullptr;
 
-    // 所有的武器
-    UPROPERTY()
-    TArray<ASTUBaseWeapon*> Weapons;
-
-    // 当前武器指针
-    int32 CurrentWeaponIndex = 0;
-
+private:
     // 是否正在更换武器
     bool EquipAnimInProgress = false;
     // 是否正在更换弹夹
@@ -78,8 +77,6 @@ private:
     void SpawnWeapons();
     // 将武器绑定到角色的某个插槽上
     void AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& SocketName);
-    // 装备武器到角色手上
-    void EquipWeapon(int32 WeaponIndex);
 
     // 播放动画蒙太奇
     void PlayAnimMontage(UAnimMontage* Animation);
@@ -89,6 +86,10 @@ private:
     void OnEquipFinished(USkeletalMeshComponent* MeshComponent);
     // 动画通知回调：切换弹夹
     void OnReloadFinished(USkeletalMeshComponent* MeshComponent);
+
+protected:
+    // 装备武器到角色手上
+    void EquipWeapon(int32 WeaponIndex);
 
     bool CanFire() const;
     bool CanEquip() const;

@@ -102,15 +102,20 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
 /* 减少子弹 */
 // 每次发射后减少子弹
 void ASTUBaseWeapon::DecreaseAmmo() {
+    if (CurrentAmmo.Bullets <= 0) return;
     CurrentAmmo.Bullets--;
 }
 // 判断弹药库是否为空
 bool ASTUBaseWeapon::IsAmmoEmpty() const {
-    return !CurrentAmmo.Infinite && CurrentAmmo.Bullets == 0 && CurrentAmmo.Clips == 0;
+    return !CurrentAmmo.Infinite && CurrentAmmo.Bullets <= 0 && CurrentAmmo.Clips <= 0;
 }
 // 判断弹夹是否为空
 bool ASTUBaseWeapon::IsClipEmpty() const {
-    return CurrentAmmo.Bullets == 0;
+    return CurrentAmmo.Bullets <= 0;
+}
+// 判断是否有剩余弹夹
+bool ASTUBaseWeapon::HasClip() const {
+    return CurrentAmmo.Clips > 0;
 }
 
 // 切换弹夹
