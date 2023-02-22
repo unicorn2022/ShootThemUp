@@ -73,3 +73,9 @@ void ASTUBasePickup::GenerateRotationYaw() {
     const auto Direction = FMath::RandBool() ? 1.0f : -1.0f;
     RotationYaw = FMath::RandRange(1.0f, 2.0f) * Direction;
 }
+
+// 可以被捡起
+bool ASTUBasePickup::CouldBeTaken() const {
+    // return !GetWorldTimerManager().IsTimerActive(RespawnTimeHandle);
+    return CouldBeTakenTest;
+}

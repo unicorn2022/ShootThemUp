@@ -25,7 +25,7 @@ protected:
     float RespawnTime = 5.0f;
 
     // 是否可以被捡起
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pickup")
     bool CouldBeTakenTest = true;
 
 protected:
