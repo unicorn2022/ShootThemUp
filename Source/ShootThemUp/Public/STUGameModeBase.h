@@ -34,6 +34,18 @@ protected:
     FGameData GameData;
 
 private:
+    // 当前回合
+    int32 CurrentRound = 1;
+    // 当前回合剩余时间
+    int32 RoundCountDown = 0;
+    // 回合计时器
+    FTimerHandle GameRoundTimerHandle;
+    
     // 生成AI
     void SpawnBots();
+
+    // 开始回合
+    void StartRound();
+    // 更新计时器
+    void GameTimerUpdate();
 };

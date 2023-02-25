@@ -126,7 +126,7 @@ void ASTUBaseWeapon::ChangeClip() {
     // 更换弹夹, 并减少弹夹数
     CurrentAmmo.Bullets = DefaultAmmo.Bullets;
     if (!CurrentAmmo.Infinite) CurrentAmmo.Clips--;
-    // UE_LOG(LogSTUBaseWeapon, Display, TEXT("------ Change Clip ------"));
+    UE_LOG(LogSTUBaseWeapon, Display, TEXT("------ Change Clip ------"));
 }
 // 将弹药库信息显示到控制台
 void ASTUBaseWeapon::LogAmmo() const {

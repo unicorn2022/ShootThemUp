@@ -58,10 +58,6 @@ void ASTUGameModeBase::GameTimerUpdate() {
     UE_LOG(LogSTUGameModeBase, Display, TEXT("Time: %i / Round: %i/%i"), RoundCountDown, CurrentRound, GameData.RoundsNum);
 
     RoundCountDown--;
-    // 也可以使用如下方案, 但是此时RoundCountDown就是float了
-    // const auto TimerRate = GetWorldTimerManager().GetTimerRate(GameRoundTimerHandle);
-    // RoundCountDown -= TimerRate;
-
     // 当前回合结束
     if (RoundCountDown == 0) {
         // 停止计时器
