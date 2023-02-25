@@ -48,9 +48,4 @@ private:
     void StartRound();
     // 更新计时器
     void GameTimerUpdate();
-
-    // 回合开始时，重新生成所有角色
-    void ResetPlayers();
-    // 重新生成单个角色
-    void ResetOnePlayer(AController* Controller);
 };

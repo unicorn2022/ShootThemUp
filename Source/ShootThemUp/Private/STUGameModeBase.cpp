@@ -71,6 +71,7 @@ void ASTUGameModeBase::GameTimerUpdate() {
 
         // 仍有剩余回合
         if (CurrentRound <= GameData.RoundsNum) {
+            ResetPlayers();
             StartRound();
         }
         // 回合已经全部结束
@@ -79,4 +80,23 @@ void ASTUGameModeBase::GameTimerUpdate() {
         }
     }
 
+}
+
+// 回合开始时，重新生成所有角色
+void ASTUGameModeBase::ResetPlayers() {
+    if (!GetWorld()) return;
+    for (auto It = GetWorld()->GetControllerIterator(); It; ++It) {
+        ResetOnePlayer(It->Get());
+    }
+}
+
+// 重新生成单个角色
+void ASTUGameModeBase::ResetOnePlayer(AController* Controller) {
+    // 当Controller已经控制Character时, RestartPlayer时, SpawnRotation会直接使用当前控制的角色的Rotation
+    // 因此需要将当前控制的角色Reset()一下, 实现重开的效果
+    if (Controller && Controller->GetPawn()) {
+        Controller->GetPawn()->Reset();
+    }
+
+    RestartPlayer(Controller);
 }

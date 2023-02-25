@@ -9,9 +9,6 @@ ASTUAIController::ASTUAIController() {
     // 创建AI感知组件
     STUAIPerceptionComponent = CreateDefaultSubobject<USTUAIPerceptionComponent>("STUAIPerceptionComponent");
     SetPerceptionComponent(*STUAIPerceptionComponent);
-
-    // 为AI分配PlayerState
-    bWantsPlayerState = true;
 }
 
 void ASTUAIController::OnPossess(APawn* InPawn) {

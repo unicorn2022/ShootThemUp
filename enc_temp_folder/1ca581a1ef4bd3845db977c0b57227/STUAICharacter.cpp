@@ -8,8 +8,8 @@
 
 ASTUAICharacter::ASTUAICharacter(const FObjectInitializer& ObjInit)
     : Super(ObjInit.SetDefaultSubobjectClass<USTUAIWeaponComponent>("STUWeaponComponent")) {
-    // 不自动生成Controller, 而是沿用之前回合的Controller
-    AutoPossessAI = EAutoPossessAI::Disabled;
+    // 将该character自动由STUAIController接管
+    AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
     AIControllerClass = ASTUAIController::StaticClass();
 
     // 设置character的旋转
