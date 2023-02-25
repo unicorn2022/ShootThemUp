@@ -27,6 +27,9 @@ public:
     int32 GetCurrentRoundNum() const { return CurrentRound; }
     int32 GetRoundSecondsRemaining() const { return RoundCountDown; }
 
+    // 请求重新生成Character
+    void RespawnResqust(AController* Controller);
+
 protected:
     // AI控制器类
     UPROPERTY(EditDefaultsOnly, Category = "Game")
@@ -69,4 +72,7 @@ private:
     void ResetOnePlayer(AController* Controller);
     // 输出角色信息到日志
     void LogPlayerInfo();
+
+    // 重新生成角色
+    void StartRespawn(AController* Controller);
 };

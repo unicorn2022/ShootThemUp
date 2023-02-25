@@ -6,8 +6,12 @@
 #include "UI/STUGameHUD.h"
 #include "AIController.h"
 #include "Player/STUPlayerState.h"
+#include "STUUtils.h"
+#include "Components/STURespawnComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUGameModeBase, All, All);
+
+constexpr static int32 MinRoundTimeForRespawn = 10;
 
 ASTUGameModeBase::ASTUGameModeBase() {
     DefaultPawnClass = ASTUBaseCharacter::StaticClass();
@@ -42,7 +46,11 @@ void ASTUGameModeBase::Killed(AController* KillerController, AController* Victim
 
     if (KillerPlayerState) KillerPlayerState->AddKill();
     if (VictimPlayerState) VictimPlayerState->AddDeath();
+
+    // 让victim重生
+    StartRespawn(VictimController);
 }
+
 
 
 // 生成AI
@@ -171,4 +179,20 @@ void ASTUGameModeBase::LogPlayerInfo() {
 
         PlayerState->LogInfo();
     }
+}
+
+
+// 重新生成角色
+void ASTUGameModeBase::StartRespawn(AController* Controller) {
+    // 剩余时间不足以重生
+    if (RoundCountDown <= GameData.RespawnTime + MinRoundTimeForRespawn) return;
+
+    const auto RespawnComponent = STUUtils::GetSTUPlayerComponent<USTURespawnComponent>(Controller);
+    if (!RespawnComponent) return;
+
+    RespawnComponent->Respawn(GameData.RespawnTime);
+}
+// 请求重新生成Character
+void ASTUGameModeBase::RespawnResqust(AController* Controller) {
+    ResetOnePlayer(Controller);
 }
