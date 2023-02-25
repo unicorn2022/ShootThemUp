@@ -70,7 +70,4 @@ private:
 
     // 生成子弹路径特效
     void SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
-
-    // 获取发射子弹的pawn
-    AController* GetController() const;
 };

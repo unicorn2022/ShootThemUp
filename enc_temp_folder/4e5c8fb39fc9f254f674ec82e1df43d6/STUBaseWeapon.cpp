@@ -37,6 +37,13 @@ void ASTUBaseWeapon::StartFire() {}
 void ASTUBaseWeapon::StopFire() {}
 void ASTUBaseWeapon::MakeShot() {}
 
+// 获取玩家控制器
+APlayerController* ASTUBaseWeapon::GetPlayerController() const {
+    const auto Player = Cast<ACharacter>(GetOwner());
+    if (!Player) return nullptr;
+    return Player->GetController<APlayerController>();
+}
+
 // 获取玩家的位置和朝向
 bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const {
     const auto STUCharacter = Cast<ACharacter>(GetOwner());
@@ -44,7 +51,7 @@ bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRot
 
     // 如果为玩家控制, 则返回玩家的朝向
     if (STUCharacter->IsPlayerControlled()) {
-        const auto Controller = STUCharacter->GetController<APlayerController>();
+        const auto Controller = GetPlayerController();
         if (!Controller) return false;
         Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
     } 

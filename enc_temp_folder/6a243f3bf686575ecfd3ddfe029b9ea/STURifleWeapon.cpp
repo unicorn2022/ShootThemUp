@@ -93,7 +93,7 @@ void ASTURifleWeapon::MakeDamage(const FHitResult& HitResult) {
     const auto DamageActor = HitResult.GetActor();
     if (!DamageActor) return;
 
-    DamageActor->TakeDamage(DamageAmount, FDamageEvent{}, GetController(), this);
+    DamageActor->TakeDamage(DamageAmount, FDamageEvent{}, GetPlayerController(), this);
 }
 
 // 初始化枪口特效组件
@@ -120,10 +120,4 @@ void ASTURifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector& Tra
         // DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 3.0f, 0, 3.0f);
         TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, TraceEnd);
     }
-}
-
-// 获取发射子弹的pawn
-AController* ASTURifleWeapon::GetController() const {
-    const auto Pawn = Cast<APawn>(GetOwner());
-    return Pawn ? Pawn->GetController() : nullptr;
 }

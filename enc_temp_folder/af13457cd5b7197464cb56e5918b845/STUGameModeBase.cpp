@@ -35,15 +35,6 @@ UClass* ASTUGameModeBase::GetDefaultPawnClassForController_Implementation(AContr
         return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 
-// 击杀事件
-void ASTUGameModeBase::Killed(AController* KillerController, AController* VictimController) {
-    const auto KillerPlayerState = KillerController ? Cast<ASTUPlayerState>(KillerController->PlayerState) : nullptr;
-    const auto VictimPlayerState = VictimController ? Cast<ASTUPlayerState>(VictimController->PlayerState) : nullptr;
-
-    if (KillerPlayerState) KillerPlayerState->AddKill();
-    if (VictimPlayerState) VictimPlayerState->AddDeath();
-}
-
 
 // 生成AI
 void ASTUGameModeBase::SpawnBots() {
@@ -133,7 +124,6 @@ void ASTUGameModeBase::GameTimerUpdate() {
         // 回合已经全部结束
         else {
             UE_LOG(LogSTUGameModeBase, Warning, TEXT("=========== Game over =========="));
-            LogPlayerInfo();        
         }
     }
 
@@ -155,20 +145,4 @@ void ASTUGameModeBase::ResetOnePlayer(AController* Controller) {
 
     RestartPlayer(Controller);
     SetPlayerColor(Controller);
-}
-
-
-// 输出角色信息到日志
-void ASTUGameModeBase::LogPlayerInfo() {
-    if (!GetWorld()) return;
-
-    for (auto It = GetWorld()->GetControllerIterator(); It; ++It) {
-        const auto Controller = It->Get();
-        if (!Controller) continue;
-
-        const auto PlayerState = Cast<ASTUPlayerState>(Controller->PlayerState);
-        if (!PlayerState) continue;
-
-        PlayerState->LogInfo();
-    }
 }

@@ -146,7 +146,7 @@ void USTUWeaponComponent::InitAnimation() {
             UE_LOG(LogSTUWeaponComponent, Error, TEXT("Reload animation notify is forgotten to set"));
             checkNoEntry();
         }
-        // UE_LOG(LogSTUWeaponComponent, Display, TEXT("订阅 ReloadFinished 事件"));
+        UE_LOG(LogSTUWeaponComponent, Display, TEXT("订阅 ReloadFinished 事件"));
         ReloadFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnReloadFinished);
     }
 }

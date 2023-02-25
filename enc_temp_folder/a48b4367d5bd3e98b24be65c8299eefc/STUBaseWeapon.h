@@ -74,6 +74,8 @@ protected:
     // 获取子弹的逻辑路径
     virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
    
+    // 获取玩家控制器
+    APlayerController* GetPlayerController() const;
     // 获取玩家的位置和朝向
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
     // 获取枪口的位置

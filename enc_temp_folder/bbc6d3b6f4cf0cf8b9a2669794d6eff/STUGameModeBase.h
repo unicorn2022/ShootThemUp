@@ -20,9 +20,6 @@ public:
     // 为生成的AIController配置Character
     virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
-    // 击杀事件
-    void Killed(AController* KillerController, AController* VictimController);
-
 protected:
     // AI控制器类
     UPROPERTY(EditDefaultsOnly, Category = "Game")
@@ -63,6 +60,5 @@ private:
     void ResetPlayers();
     // 重新生成单个角色
     void ResetOnePlayer(AController* Controller);
-    // 输出角色信息到日志
-    void LogPlayerInfo();
+
 };

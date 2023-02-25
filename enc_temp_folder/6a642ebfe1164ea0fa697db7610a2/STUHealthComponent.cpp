@@ -7,7 +7,6 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 #include "Camera/CameraShakeBase.h"
-#include "STUGameModeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUHealthComponent, All, All);
 
@@ -25,7 +24,7 @@ void USTUHealthComponent::BeginPlay() {
     // 订阅OnTakeAnyDamage事件
     AActor* ComponentOwner = GetOwner();
     if (ComponentOwner) {
-        // UE_LOG(LogSTUHealthComponent, Display, TEXT("订阅 OnTakeAnyDamage 事件"));
+        UE_LOG(LogSTUHealthComponent, Display, TEXT("订阅 OnTakeAnyDamage 事件"));
         ComponentOwner->OnTakeAnyDamage.AddDynamic(this, &USTUHealthComponent::OnTakeAnyDamageHandler);
     }
 }
@@ -41,10 +40,7 @@ void USTUHealthComponent::OnTakeAnyDamageHandler(
     GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
     
     // 角色死亡后, 广播OnDeath委托
-    if (IsDead()) {
-        Killed(InstigatedBy);
-        OnDeath.Broadcast();
-    }
+    if (IsDead()) OnDeath.Broadcast();
     // 角色未死亡且可以自动恢复
     else if (AutoHeal) {
         GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, this, &USTUHealthComponent::HealUpdate, HealUpdateTime, true, HealDelay);
@@ -100,16 +96,4 @@ void USTUHealthComponent::PlayCameraShake() {
     Controller->PlayerCameraManager->StartCameraShake(CameraShake);
 }
 
-// 被杀死
-void USTUHealthComponent::Killed(AController* KillerController) {
-    if (!GetWorld()) return;
-
-    const auto GameMode = Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode());
-    if (!GameMode) return;
-
-    const auto Player = Cast<APawn>(GetOwner());
-    if (!Player) return;
-
-    const auto VictimController = Player->GetController();
-    GameMode->Killed(KillerController, VictimController);
-}
+void USTUHealthComponent::Killed(AController* KillerController) {}

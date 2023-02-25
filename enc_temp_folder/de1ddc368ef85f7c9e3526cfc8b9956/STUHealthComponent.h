@@ -79,7 +79,4 @@ private:
 
     // 相机抖动
     void PlayCameraShake();
-
-    // 被杀死
-    void Killed(AController* KillerController);
 };
