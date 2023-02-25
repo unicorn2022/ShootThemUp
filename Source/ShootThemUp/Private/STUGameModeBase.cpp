@@ -5,6 +5,7 @@
 #include "Player/STUPlayerController.h"
 #include "UI/STUGameHUD.h"
 #include "AIController.h"
+#include "Player/STUPlayerState.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUGameModeBase, All, All);
 
@@ -12,19 +13,21 @@ ASTUGameModeBase::ASTUGameModeBase() {
     DefaultPawnClass = ASTUBaseCharacter::StaticClass();
     PlayerControllerClass = ASTUPlayerController::StaticClass();
     HUDClass = ASTUGameHUD::StaticClass();
+    PlayerStateClass = ASTUPlayerState::StaticClass();
 }
 
 void ASTUGameModeBase::StartPlay() {
     Super::StartPlay();
 
     SpawnBots();
+    CreateTeamsInfo();
 
-    // ³õÊ¼»¯µÚÒ»»ØºÏ
+    // åˆå§‹åŒ–ç¬¬ä¸€å›åˆ
     CurrentRound = 1;
     StartRound();
 }
 
-// ÎªÉú³ÉµÄAIControllerÅäÖÃCharacter
+// ä¸ºç”Ÿæˆçš„AIControlleré…ç½®Character
 UClass* ASTUGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController) {
     if (InController && InController->IsA<AAIController>())
         return AIPawnClass;
@@ -33,7 +36,7 @@ UClass* ASTUGameModeBase::GetDefaultPawnClassForController_Implementation(AContr
 }
 
 
-// Éú³ÉAI
+// ç”ŸæˆAI
 void ASTUGameModeBase::SpawnBots() {
     if (!GetWorld()) return;
 
@@ -46,57 +49,100 @@ void ASTUGameModeBase::SpawnBots() {
     }
 }
 
-// ¿ªÊ¼»ØºÏ
-void ASTUGameModeBase::StartRound() {
-    RoundCountDown = GameData.RoundTime;
-    // Ã¿ÃëÒ»´Î, ¼õÉÙRoundCountDownµÄÖµ
-    GetWorldTimerManager().SetTimer(GameRoundTimerHandle, this, &ASTUGameModeBase::GameTimerUpdate, 1.0f, true);
+
+// åˆ›å»ºé˜Ÿä¼ä¿¡æ¯
+void ASTUGameModeBase::CreateTeamsInfo() {
+    if (!GetWorld()) return;
+
+    int32 TeamID = 1;
+    for (auto It = GetWorld()->GetControllerIterator(); It; ++It) {
+        const auto Controller = It->Get();
+        if (!Controller) continue;
+        
+        const auto PlayerState = Cast<ASTUPlayerState>(Controller->PlayerState);
+        if (!PlayerState) continue;
+
+        PlayerState->SetTeamID(TeamID);
+        PlayerState->SetTeamColor(DetermineColorByTeamID(TeamID));
+        SetPlayerColor(Controller);
+
+        TeamID = TeamID == 1 ? 2 : 1;
+    }
+}
+// æ ¹æ®TeamID, å†³å®šTeamColor
+FLinearColor ASTUGameModeBase::DetermineColorByTeamID(int32 TeamID) {
+    if (TeamID <= GameData.TeamColors.Num()) {
+        return GameData.TeamColors[TeamID - 1];
+    } 
+    else {
+        UE_LOG(LogSTUGameModeBase, Warning, TEXT("No color for team id: %i, set to default: %s"), TeamID,
+            *GameData.DefaultTeamColor.ToString());
+        return GameData.DefaultTeamColor;
+    }
+}
+// è®¾ç½®ç©å®¶é¢œè‰²
+void ASTUGameModeBase::SetPlayerColor(AController* Controller) {
+    if (!Controller) return;
+
+    const auto Character = Cast<ASTUBaseCharacter>(Controller->GetPawn());
+    if (!Character) return;
+
+    const auto PlayerState = Cast<ASTUPlayerState>(Controller->PlayerState);
+    if (!PlayerState) return;
+
+    Character->SetPlayerColor(PlayerState->GetTeamColor());
 }
 
-// ¸üĞÂ¼ÆÊ±Æ÷
+
+// å¼€å§‹å›åˆ
+void ASTUGameModeBase::StartRound() {
+    RoundCountDown = GameData.RoundTime;
+    // æ¯ç§’ä¸€æ¬¡, å‡å°‘RoundCountDownçš„å€¼
+    GetWorldTimerManager().SetTimer(GameRoundTimerHandle, this, &ASTUGameModeBase::GameTimerUpdate, 1.0f, true);
+}
+// æ›´æ–°è®¡æ—¶å™¨
 void ASTUGameModeBase::GameTimerUpdate() {
     UE_LOG(LogSTUGameModeBase, Display, TEXT("Time: %i / Round: %i/%i"), RoundCountDown, CurrentRound, GameData.RoundsNum);
 
     RoundCountDown--;
-    // Ò²¿ÉÒÔÊ¹ÓÃÈçÏÂ·½°¸, µ«ÊÇ´ËÊ±RoundCountDown¾ÍÊÇfloatÁË
+    // ä¹Ÿå¯ä»¥ä½¿ç”¨å¦‚ä¸‹æ–¹æ¡ˆ, ä½†æ˜¯æ­¤æ—¶RoundCountDownå°±æ˜¯floatäº†
     // const auto TimerRate = GetWorldTimerManager().GetTimerRate(GameRoundTimerHandle);
     // RoundCountDown -= TimerRate;
 
-    // µ±Ç°»ØºÏ½áÊø
+    // å½“å‰å›åˆç»“æŸ
     if (RoundCountDown == 0) {
-        // Í£Ö¹¼ÆÊ±Æ÷
+        // åœæ­¢è®¡æ—¶å™¨
         GetWorldTimerManager().ClearTimer(GameRoundTimerHandle);
-        // »ØºÏÊı+1
+        // å›åˆæ•°+1
         CurrentRound++;
 
-        // ÈÔÓĞÊ£Óà»ØºÏ
+        // ä»æœ‰å‰©ä½™å›åˆ
         if (CurrentRound <= GameData.RoundsNum) {
             ResetPlayers();
             StartRound();
         }
-        // »ØºÏÒÑ¾­È«²¿½áÊø
+        // å›åˆå·²ç»å…¨éƒ¨ç»“æŸ
         else {
             UE_LOG(LogSTUGameModeBase, Warning, TEXT("=========== Game over =========="));
         }
     }
 
 }
-
-// »ØºÏ¿ªÊ¼Ê±£¬ÖØĞÂÉú³ÉËùÓĞ½ÇÉ«
+// å›åˆå¼€å§‹æ—¶ï¼Œé‡æ–°ç”Ÿæˆæ‰€æœ‰è§’è‰²
 void ASTUGameModeBase::ResetPlayers() {
     if (!GetWorld()) return;
     for (auto It = GetWorld()->GetControllerIterator(); It; ++It) {
         ResetOnePlayer(It->Get());
     }
 }
-
-// ÖØĞÂÉú³Éµ¥¸ö½ÇÉ«
+// é‡æ–°ç”Ÿæˆå•ä¸ªè§’è‰²
 void ASTUGameModeBase::ResetOnePlayer(AController* Controller) {
-    // µ±ControllerÒÑ¾­¿ØÖÆCharacterÊ±, RestartPlayerÊ±, SpawnRotation»áÖ±½ÓÊ¹ÓÃµ±Ç°¿ØÖÆµÄ½ÇÉ«µÄRotation
-    // Òò´ËĞèÒª½«µ±Ç°¿ØÖÆµÄ½ÇÉ«Reset()Ò»ÏÂ, ÊµÏÖÖØ¿ªµÄĞ§¹û
+    // å½“Controllerå·²ç»æ§åˆ¶Characteræ—¶, RestartPlayeræ—¶, SpawnRotationä¼šç›´æ¥ä½¿ç”¨å½“å‰æ§åˆ¶çš„è§’è‰²çš„Rotation
+    // å› æ­¤éœ€è¦å°†å½“å‰æ§åˆ¶çš„è§’è‰²Reset()ä¸€ä¸‹, å®ç°é‡å¼€çš„æ•ˆæœ
     if (Controller && Controller->GetPawn()) {
         Controller->GetPawn()->Reset();
     }
 
     RestartPlayer(Controller);
+    SetPlayerColor(Controller);
 }

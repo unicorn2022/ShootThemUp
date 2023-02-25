@@ -54,10 +54,14 @@ protected:
     // 坠落伤害范围
     UPROPERTY(EditDefaultsOnly, Category = "Damage")
     FVector2D LandedDamageScale = FVector2D(10.0f, 100.0f);
+    // 角色材质的颜色属性名
+    UPROPERTY(EditDefaultsOnly, Category = "Damage")
+    FName MaterialColorName = "Paint Color";
 
     virtual void BeginPlay() override;
     // 死亡回调函数
     virtual void OnDeath();
+
 
 public:
     virtual void Tick(float DeltaTime) override;
@@ -71,6 +75,9 @@ public:
     // 获取角色移动的方向
     UFUNCTION(BlueprintCallable, Category = "Movement")
     float GetMovementDirection() const;
+
+    // 设置角色的颜色
+    void SetPlayerColor(const FLinearColor& Color);
 
 private:
     // WS控制角色前后移动

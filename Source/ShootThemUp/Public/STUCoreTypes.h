@@ -110,4 +110,12 @@ struct FGameData {
     // 一回合的时间(s)
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "300"))
     int32 RoundTime = 10;
+
+    // 默认队伍颜色
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    FLinearColor DefaultTeamColor = FLinearColor::Red;
+
+    // 队伍可选颜色
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    TArray<FLinearColor> TeamColors;
 };

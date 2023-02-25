@@ -193,7 +193,7 @@ void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit) {
     TakeDamage(FinalDamage, FDamageEvent{}, nullptr, nullptr);
 }
 
-// 设置角色的颜色
+
 void ASTUBaseCharacter::SetPlayerColor(const FLinearColor& Color) {
     const auto MaterialInst = GetMesh()->CreateAndSetMaterialInstanceDynamic(0);
     if (!MaterialInst) return;

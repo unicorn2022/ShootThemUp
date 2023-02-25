@@ -34,23 +34,31 @@ protected:
     FGameData GameData;
 
 private:
+    // 生成AI
+    void SpawnBots();
+    // 创建队伍信息
+    void CreateTeamsInfo();
+    // 根据TeamID, 决定TeamColor
+    FLinearColor DetermineColorByTeamID(int32 TeamID);
+    // 设置玩家颜色
+    void SetPlayerColor(AController* Controller);
+
+private:
     // 当前回合
     int32 CurrentRound = 1;
     // 当前回合剩余时间
     int32 RoundCountDown = 0;
     // 回合计时器
     FTimerHandle GameRoundTimerHandle;
-    
-    // 生成AI
-    void SpawnBots();
-
     // 开始回合
     void StartRound();
     // 更新计时器
     void GameTimerUpdate();
 
+private:
     // 回合开始时，重新生成所有角色
     void ResetPlayers();
     // 重新生成单个角色
     void ResetOnePlayer(AController* Controller);
+
 };
