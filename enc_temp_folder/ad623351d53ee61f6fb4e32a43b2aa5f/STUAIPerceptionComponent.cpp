@@ -22,16 +22,9 @@ AActor* USTUAIPerceptionComponent::GetClosetEnemy() const {
     float ClosetDistance = MAX_FLT;
     AActor* ClosetActor = nullptr;
     for (const auto PerciveActor : PerciveActors) {
-        // 判断character是否已死亡
         const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(PerciveActor);
         if (!HealthComponent || HealthComponent->IsDead()) continue;
-
-        // 判断两个character是否为敌人
-        const auto PercivePawn = Cast<APawn>(PerciveActor);
-        const auto AreEnemies = PercivePawn && STUUtils::AreEnemies(Controller, PercivePawn->Controller);
-        if (!AreEnemies) continue;
         
-        // 更新距离信息
         const auto CurrentDistance = (PerciveActor->GetActorLocation() - Pawn->GetActorLocation()).Size();
         if (CurrentDistance < ClosetDistance) {
             ClosetDistance = CurrentDistance;
