@@ -75,7 +75,4 @@ private:
 
     // 重新生成角色
     void StartRespawn(AController* Controller);
-
-    // 游戏结束
-    void GameOver();
 };

@@ -8,7 +8,6 @@
 #include "Player/STUPlayerState.h"
 #include "STUUtils.h"
 #include "Components/STURespawnComponent.h"
-#include "EngineUtils.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUGameModeBase, All, All);
 
@@ -141,7 +140,8 @@ void ASTUGameModeBase::GameTimerUpdate() {
         }
         // 回合已经全部结束
         else {
-            GameOver();       
+            UE_LOG(LogSTUGameModeBase, Warning, TEXT("=========== Game over =========="));
+            LogPlayerInfo();        
         }
     }
 
@@ -195,18 +195,4 @@ void ASTUGameModeBase::StartRespawn(AController* Controller) {
 // 请求重新生成Character
 void ASTUGameModeBase::RespawnResqust(AController* Controller) {
     ResetOnePlayer(Controller);
-}
-
-
-// 游戏结束
-void ASTUGameModeBase::GameOver() {
-    UE_LOG(LogSTUGameModeBase, Warning, TEXT("=========== Game over =========="));
-    LogPlayerInfo();
-
-    for (auto Pawn : TActorRange<APawn>(GetWorld())) {
-        if (Pawn) {
-            Pawn->TurnOff();
-            Pawn->DisableInput(nullptr);
-        }
-    }
 }
