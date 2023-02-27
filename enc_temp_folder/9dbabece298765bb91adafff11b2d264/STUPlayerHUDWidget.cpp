@@ -39,11 +39,10 @@ bool USTUPlayerHUDWidget::IsPlayerSpectating() const {
 }
 
 bool USTUPlayerHUDWidget::Initialize() {
-    if (GetOwningPlayer()) {
-        GetOwningPlayer()->GetOnNewPawnNotifier().AddUObject(this, &USTUPlayerHUDWidget::OnNewPawn);
-        // Initialize会在OnPossess之后调用, 因此需要手动调用一次
-        OnNewPawn(GetOwningPlayerPawn());
-    } 
+    const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
+    if (HealthComponent) {
+        HealthComponent->OnHealthChanged.AddUObject(this, &USTUPlayerHUDWidget::OnHealthChanged);
+    }
     return Super::Initialize();
 }
 
@@ -51,13 +50,4 @@ bool USTUPlayerHUDWidget::Initialize() {
 void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta) {
     // 血量变化值 < 0, 受到伤害
     if (HealthDelta < 0.0f) OnTakeDamage();
-}
-
-// 玩家重生时, Pawn会改变
-void USTUPlayerHUDWidget::OnNewPawn(APawn* NewPawn) {
-    // 重新订阅HealthComponent的OnHealthChanged事件
-    const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(NewPawn);
-    if (HealthComponent && !HealthComponent->OnHealthChanged.IsBoundToObject(this)) {
-        HealthComponent->OnHealthChanged.AddUObject(this, &USTUPlayerHUDWidget::OnHealthChanged);
-    }
 }

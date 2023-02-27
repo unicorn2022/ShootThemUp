@@ -37,7 +37,4 @@ public:
 private:
     // 玩家血量变化时
     void OnHealthChanged(float Health, float HealthDelta);
-
-    // 玩家重生时, Pawn会改变
-    void OnNewPawn(APawn* NewPawn);
 };
