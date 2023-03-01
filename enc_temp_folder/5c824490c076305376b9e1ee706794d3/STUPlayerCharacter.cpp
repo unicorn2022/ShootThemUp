@@ -115,15 +115,6 @@ void ASTUPlayerCharacter::OnCameraCollisionEndOverlap(
 }
 // 检查相机是否穿过角色身体
 void ASTUPlayerCharacter::CheckCameraOverlap() {
-    // 将角色的网格体设为不可见
     const auto HideMesh = CameraCollisionComponent->IsOverlappingComponent(GetCapsuleComponent());
     GetMesh()->SetOwnerNoSee(HideMesh);
-
-    // 将子组件设为不可见
-    TArray<USceneComponent*> MeshChildren;
-    GetMesh()->GetChildrenComponents(true, MeshChildren);
-    for (auto MeshChild : MeshChildren) {
-        const auto MeshChildGeometry = Cast<UPrimitiveComponent>(MeshChild);
-        if (MeshChildGeometry) MeshChildGeometry->SetOwnerNoSee(HideMesh);
-    }
 }

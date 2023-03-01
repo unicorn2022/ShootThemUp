@@ -8,6 +8,7 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class USphereComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUPlayerCharacter : public ASTUBaseCharacter {
@@ -24,9 +25,13 @@ protected:
     // 组件：相机
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UCameraComponent* CameraComponent;
+    // 组件：相机的球形碰撞体
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    USphereComponent* CameraCollisionComponent;
 
-    // 死亡回调函数
+    // 委托：角色死亡
     virtual void OnDeath() override;
+    virtual void BeginPlay() override;
 
 public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -45,4 +50,15 @@ private:
     bool WantsToRun = false;  // 按下Shift只能表示想要跑步, 只有当还按下W时, 才能开始跑步
     void OnStartRunning();
     void OnStopRunning();
+
+    // 委托：相机与角色开始重叠
+    UFUNCTION()
+    void OnCameraCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+        int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+    // 委托：相机与角色结束重叠
+    UFUNCTION()
+    void OnCameraCollisionEndOverlap(
+        UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+    // 检查相机是否穿过角色身体
+    void CheckCameraOverlap();
 };
