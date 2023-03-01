@@ -1,9 +1,6 @@
 // Shoot Them Up Game, All Rights Reserved
 
 #include "Player/STUBaseCharacter.h"
-#include "Camera/CameraComponent.h"
-#include "Components/InputComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Components/STUCharacterMovementComponent.h"
 #include "Components/STUHealthComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -20,23 +17,8 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     // 允许该character每一帧调用Tick()
     PrimaryActorTick.bCanEverTick = true;
 
-    // 创建弹簧臂组件, 并设置其父组件为根组件, 允许pawn控制旋转
-    SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
-    SpringArmComponent->SetupAttachment(GetRootComponent());
-    SpringArmComponent->bUsePawnControlRotation = true;
-    SpringArmComponent->SocketOffset = FVector(0.0f, 100.0f, 80.0f);
-
-    // 创建相机组件, 并设置其父组件为弹簧臂组件
-    CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
-    CameraComponent->SetupAttachment(SpringArmComponent);
-
     // 创建血量组件, 由于其是纯逻辑的, 不需要设置父组件
     HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("STUHealthComponent");
-
-    // 创建血量显示组件, 并设置其父组件为根组件
-    HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("TextRenderComponent");
-    HealthTextComponent->SetupAttachment(GetRootComponent());
-    HealthTextComponent->SetOwnerNoSee(true);
 
     // 创建武器组件, 由于其是纯逻辑的, 不需要设置父组件
     WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("STUWeaponComponent");
@@ -47,7 +29,6 @@ void ASTUBaseCharacter::BeginPlay() {
 
     // 检查组件是否成功创建(仅开发阶段可用)
     check(HealthComponent);
-    check(HealthTextComponent);
     check(GetCharacterMovement());
     check(GetMesh());
 
@@ -66,41 +47,35 @@ void ASTUBaseCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 }
 
-// Called to bind functionality to input
-void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-    check(PlayerInputComponent);
-
-    // WASD控制角色移动
-    PlayerInputComponent->BindAxis("MoveForward", this, &ASTUBaseCharacter::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &ASTUBaseCharacter::MoveRight);
-
-    // 鼠标控制相机移动
-    PlayerInputComponent->BindAxis("LookUp", this, &ASTUBaseCharacter::AddControllerPitchInput);
-    PlayerInputComponent->BindAxis("TurnAround", this, &ASTUBaseCharacter::AddControllerYawInput);
-
-    // 空格键控制角色跳跃
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
-
-    // 左Shift控制角色开始跑动
-    PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::OnStartRunning);
-    PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::OnStopRunning);
-
-    // 鼠标左键控制武器开火
-    PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &USTUWeaponComponent::StartFire);
-    PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &USTUWeaponComponent::StopFire);
-    
-    // Tab键切换武器
-    PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon);
-     
-    // R键切换弹夹
-    PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Reload);
-}
+// 血量变化回调函数
+void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta) {}
 
 // 判断角色是否处于奔跑状态
 bool ASTUBaseCharacter::IsRunning() const {
-    return WantsToRun && IsMovingForward && !GetVelocity().IsZero();
+    return false;
+}
+
+// 死亡回调函数
+void ASTUBaseCharacter::OnDeath() {
+    UE_LOG(LogSTUBaseCharacter, Warning, TEXT("Player %s is dead"), *GetName());
+    // 播放死亡动画蒙太奇
+    // PlayAnimMontage(DeathAnimMontage);
+
+    // 禁止角色的移动
+    GetCharacterMovement()->DisableMovement();
+
+    // 一段时间后摧毁角色
+    SetLifeSpan(LifeSpanOnDeath);
+
+    // 禁止胶囊体碰撞
+    GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+    // 停止武器组件的开火
+    WeaponComponent->StopFire();
+
+    // 启用物理模拟, 实现角色死亡效果
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    GetMesh()->SetSimulatePhysics(true);
 }
 
 // 获取角色移动的方向
@@ -123,61 +98,6 @@ float ASTUBaseCharacter::GetMovementDirection() const {
 
     angle *= FMath::Sign(CrossProduct.Z);
     return angle;
-}
-
-// WS控制角色前后移动
-void ASTUBaseCharacter::MoveForward(float Amount) {
-    IsMovingForward = Amount > 0.0f;
-    if (Amount == 0.0f) return;
-    AddMovementInput(GetActorForwardVector(), Amount);
-}
-// AD控制角色左右移动
-void ASTUBaseCharacter::MoveRight(float Amount) {
-    if (Amount == 0.0f) return;
-    AddMovementInput(GetActorRightVector(), Amount);
-}
-
-// 左Shift控制角色开始跑动
-void ASTUBaseCharacter::OnStartRunning() {
-    WantsToRun = true;
-}
-void ASTUBaseCharacter::OnStopRunning() {
-    WantsToRun = false;
-}
-
-// 死亡回调函数
-void ASTUBaseCharacter::OnDeath() {
-    UE_LOG(LogSTUBaseCharacter, Warning, TEXT("Player %s is dead"), *GetName());
-    // 播放死亡动画蒙太奇
-    // PlayAnimMontage(DeathAnimMontage);
-    
-    // 禁止角色的移动
-    GetCharacterMovement()->DisableMovement();
-    
-    // 一段时间后摧毁角色
-    SetLifeSpan(LifeSpanOnDeath);
-    
-    // 切换状态, 从而将pawn切换为观察者类
-    if (Controller) {
-        Controller->ChangeState(NAME_Spectating);
-    }
-
-    // 禁止胶囊体碰撞
-    GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-    
-    // 停止武器组件的开火
-    WeaponComponent->StopFire();
-
-    // 启用物理模拟, 实现角色死亡效果
-    GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-    GetMesh()->SetSimulatePhysics(true);
-}
-
-// 血量变化回调函数
-void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta) {
-    // 获取角色当前血量并显示
-    const FString HealthString = FString::Printf(TEXT("%.0f"), Health);
-    HealthTextComponent->SetText(FText::FromString(HealthString));
 }
 
 // 坠落回调函数
