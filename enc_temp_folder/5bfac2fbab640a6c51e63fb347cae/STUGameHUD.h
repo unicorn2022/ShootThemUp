@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "STUCoreTypes.h"
 #include "STUGameHUD.generated.h"
 
 UCLASS()
@@ -22,7 +21,4 @@ protected:
 private:
     // 绘制屏幕中心的十字准线
     void DrawCrossHair();
-    
-    // 委托：游戏状态改变
-    void OnMatchStateChanged(ESTUMatchState State);
 };

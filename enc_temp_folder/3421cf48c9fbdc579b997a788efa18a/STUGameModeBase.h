@@ -15,9 +15,6 @@ class SHOOTTHEMUP_API ASTUGameModeBase : public AGameModeBase {
 public:
     ASTUGameModeBase();
 
-    // 委托：游戏状态改变
-    FOnMatchStateChangedSignature OnMatchStateChanged;
-
     virtual void StartPlay() override;
 
     // 为生成的AIController配置Character
@@ -57,8 +54,6 @@ private:
     void SetPlayerColor(AController* Controller);
 
 private:
-    // 当前游戏状态
-    ESTUMatchState MatchState = ESTUMatchState::WaitingToStart;
     // 当前回合
     int32 CurrentRound = 1;
     // 当前回合剩余时间
@@ -83,7 +78,4 @@ private:
 
     // 游戏结束
     void GameOver();
-
-    // 设置游戏状态, 同时广播事件
-    void SetMatchState(ESTUMatchState State);
 };

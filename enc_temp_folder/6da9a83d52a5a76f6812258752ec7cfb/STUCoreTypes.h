@@ -3,7 +3,7 @@
 
 /* 武器 */
 class ASTUBaseWeapon;
-// 委托：弹夹为空
+// 事件：弹夹为空
 DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature);
 // 弹药库数据：子弹数量 & 弹夹数量
 USTRUCT(BlueprintType)
@@ -50,9 +50,9 @@ struct FWeaponUIData {
 };
 
 /* 血量 */
-// 委托：角色死亡
+// 事件：角色死亡
 DECLARE_MULTICAST_DELEGATE(FOnDeath);
-// 委托：角色血量变化
+// 事件：角色血量变化
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, float, float);
 
 
@@ -123,15 +123,3 @@ struct FGameData {
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "20"))
     int32 RespawnTime = 5;
 };
-
-/* 游戏菜单 */
-// 游戏状态: 等待开始 or 正在进行 or 暂停 or 结束
-UENUM(BlueprintType)
-enum class ESTUMatchState : uint8 {
-    WaitingToStart = 0,
-    InProgress,
-    Pause,
-    GameOver
-};
-// 委托：游戏状态改变
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchStateChangedSignature, ESTUMatchState);

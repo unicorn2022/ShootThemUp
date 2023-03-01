@@ -27,10 +27,9 @@ void ASTUGameModeBase::StartPlay() {
     SpawnBots();
     CreateTeamsInfo();
 
+    // 初始化第一回合
     CurrentRound = 1;
     StartRound();
-
-    SetMatchState(ESTUMatchState::InProgress);
 }
 
 // 为生成的AIController配置Character
@@ -210,14 +209,6 @@ void ASTUGameModeBase::GameOver() {
             Pawn->DisableInput(nullptr);
         }
     }
-
-    SetMatchState(ESTUMatchState::GameOver);
 }
 
-// 设置游戏状态, 同时广播事件
-void ASTUGameModeBase::SetMatchState(ESTUMatchState State) {
-    if (MatchState == State) return;
-
-    MatchState = State;
-    OnMatchStateChanged.Broadcast(MatchState);
-}
+void ASTUGameModeBase::SetMatchState(ESTUMatchState State) {}
