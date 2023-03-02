@@ -33,6 +33,11 @@ public:
     // 请求重新生成Character
     void RespawnResqust(AController* Controller);
 
+    // 暂停游戏
+    virtual bool SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate = FCanUnpause()) override;
+    // 清除暂停
+    virtual bool ClearPause() override;
+
 protected:
     // AI控制器类
     UPROPERTY(EditDefaultsOnly, Category = "Game")

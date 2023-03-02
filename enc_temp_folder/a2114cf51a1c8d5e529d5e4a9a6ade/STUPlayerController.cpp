@@ -43,10 +43,8 @@ void ASTUPlayerController::OnPauseGame() {
 void ASTUPlayerController::OnMatchStateChanged(ESTUMatchState State) {
     // 游戏进行中, 停止显示光标
     if (State == ESTUMatchState::InProgress) {
-        SetInputMode(FInputModeGameOnly());
         bShowMouseCursor = false;
     } else {
-        SetInputMode(FInputModeUIOnly());
         bShowMouseCursor = true;
     }
 }

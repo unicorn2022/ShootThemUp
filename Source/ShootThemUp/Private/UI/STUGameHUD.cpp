@@ -14,9 +14,17 @@ void ASTUGameHUD::DrawHUD() {
 
 void ASTUGameHUD::BeginPlay() {
     Super::BeginPlay();
-    auto PlayerHUDWidget = CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass);
-    if (PlayerHUDWidget) {
-        PlayerHUDWidget->AddToViewport();
+
+    // 将UserWidget与对应游戏状态建立映射
+    GameWidgets.Add(ESTUMatchState::InProgress, CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass));
+    GameWidgets.Add(ESTUMatchState::Pause, CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass));
+
+    // 将UserWidget添加到场景中, 并设置为不可见
+    for (auto GameWidgetPair : GameWidgets) {
+        const auto GameWidget = GameWidgetPair.Value;
+        if (!GameWidget) continue;
+        GameWidget->AddToViewport();
+        GameWidget->SetVisibility(ESlateVisibility::Hidden);
     }
 
     // 订阅OnMatchStateChanged委托
@@ -44,5 +52,11 @@ void ASTUGameHUD::DrawCrossHair() {
 
 // 委托：游戏状态改变
 void ASTUGameHUD::OnMatchStateChanged(ESTUMatchState State) {
+    // 将当前UI设为不可见 
+    if (CurrentWidget) CurrentWidget->SetVisibility(ESlateVisibility::Hidden);
+    // 然后更改UI界面
+    if (GameWidgets.Contains(State)) CurrentWidget = GameWidgets[State];
+    if (CurrentWidget) CurrentWidget->SetVisibility(ESlateVisibility::Visible);
+
     UE_LOG(LogSTUGameHUD, Warning, TEXT("Match state changed: %s"), *UEnum::GetValueAsString(State));
 }

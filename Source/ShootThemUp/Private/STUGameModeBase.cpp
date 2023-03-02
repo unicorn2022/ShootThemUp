@@ -199,6 +199,25 @@ void ASTUGameModeBase::RespawnResqust(AController* Controller) {
 }
 
 
+// 暂停游戏
+bool ASTUGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate) {
+    // 先判断能否暂停, 然后再设置游戏状态
+    const auto PauseSet = Super::SetPause(PC, CanUnpauseDelegate);
+    if (PauseSet) {
+        SetMatchState(ESTUMatchState::Pause);
+    }
+    return PauseSet;
+}
+// 清除暂停
+bool ASTUGameModeBase::ClearPause() {
+    const auto PauseCleared = Super::ClearPause();
+    if (PauseCleared) {
+        SetMatchState(ESTUMatchState::InProgress);
+    }
+    return PauseCleared;
+}
+
+
 // 游戏结束
 void ASTUGameModeBase::GameOver() {
     UE_LOG(LogSTUGameModeBase, Warning, TEXT("=========== Game over =========="));
