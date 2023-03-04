@@ -12,9 +12,14 @@ class SHOOTTHEMUP_API USTUGameInstance : public UGameInstance {
 
 public:
     FName GetStartupLevelName() const { return StartupLevelName; }
+    FName GetMenuLevelName() const { return MenuLevelName; }
 
 protected:
     // 开始关卡的名称
     UPROPERTY(EditDefaultsOnly, Category = "Game")
     FName StartupLevelName = NAME_None;
+
+    // 主菜单关卡的名称
+    UPROPERTY(EditDefaultsOnly, Category = "Game")
+    FName MenuLevelName = NAME_None;
 };

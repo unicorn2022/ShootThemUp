@@ -22,7 +22,7 @@ void USTUMenuUserWidget::OnStartGame() {
     if (!STUGameInstance) return;
 
     if (STUGameInstance->GetStartupLevelName().IsNone()) {
-        UE_LOG(LogSTUMenuUserWidget, Error, TEXT("Level name is NONE"));
+        UE_LOG(LogSTUMenuUserWidget, Error, TEXT("Startup level name is NONE"));
         return;
     }
 
