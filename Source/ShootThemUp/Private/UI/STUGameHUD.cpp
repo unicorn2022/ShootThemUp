@@ -18,6 +18,7 @@ void ASTUGameHUD::BeginPlay() {
     // 将UserWidget与对应游戏状态建立映射
     GameWidgets.Add(ESTUMatchState::InProgress, CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass));
     GameWidgets.Add(ESTUMatchState::Pause, CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass));
+    GameWidgets.Add(ESTUMatchState::GameOver, CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass));
 
     // 将UserWidget添加到场景中, 并设置为不可见
     for (auto GameWidgetPair : GameWidgets) {
