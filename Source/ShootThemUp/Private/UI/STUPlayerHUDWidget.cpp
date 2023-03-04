@@ -38,13 +38,14 @@ bool USTUPlayerHUDWidget::IsPlayerSpectating() const {
     return Controller && Controller->GetStateName() == NAME_Spectating;
 }
 
-bool USTUPlayerHUDWidget::Initialize() {
+void USTUPlayerHUDWidget::NativeOnInitialized() {
+    Super::NativeOnInitialized();
+
     if (GetOwningPlayer()) {
         GetOwningPlayer()->GetOnNewPawnNotifier().AddUObject(this, &USTUPlayerHUDWidget::OnNewPawn);
         // Initialize会在OnPossess之后调用, 因此需要手动调用一次
         OnNewPawn(GetOwningPlayerPawn());
-    } 
-    return Super::Initialize();
+    }
 }
 
 // 玩家血量变化时

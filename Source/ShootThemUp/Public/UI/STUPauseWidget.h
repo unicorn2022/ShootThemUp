@@ -12,12 +12,12 @@ UCLASS()
 class SHOOTTHEMUP_API USTUPauseWidget : public UUserWidget {
     GENERATED_BODY()
 
-public:
-    virtual bool Initialize() override;
-
 protected:
     UPROPERTY(meta = (BindWidget))
     UButton* ClearPauseButton;
+
+    // Initialize()时调用的函数
+    virtual void NativeOnInitialized() override;
 
 private:
     // 委托：点击按钮

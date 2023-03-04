@@ -65,6 +65,6 @@ void USTUGameOverWidget::UpdatePlayerState() {
 // 委托：重新开始游戏
 void USTUGameOverWidget::OnResetLevel() {
     // 硬重置: 直接重新打开关卡
-    const auto CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this);
+    const FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this);
     UGameplayStatics::OpenLevel(this, FName(CurrentLevelName));
 }

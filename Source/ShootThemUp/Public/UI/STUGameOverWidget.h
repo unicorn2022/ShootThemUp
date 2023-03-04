@@ -8,25 +8,34 @@
 #include "STUGameOverWidget.generated.h"
 
 class UVerticalBox;
+class UButton;
 
 UCLASS()
 class SHOOTTHEMUP_API USTUGameOverWidget : public UUserWidget {
     GENERATED_BODY()
 
-public:
-    virtual bool Initialize() override;
-
 protected:
-    // 显示角色信息的垂直框
+    // 垂直框：显示角色信息
     UPROPERTY(meta = (BindWidget))
     UVerticalBox* PlayerStateBox;
 
-    // 角色信息单行显示UI
+    // Widget：角色信息单行显示UI
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UUserWidget> PlayerStateRowWidgetClass;
+
+    // 按钮：重新开始游戏
+    UPROPERTY(meta = (BindWidget))
+    UButton* ResetLevelButton;
+
+    // Initialize()时调用的函数
+    virtual void NativeOnInitialized() override;
 
 private:
     void OnMatchStateChanged(ESTUMatchState State);
     // 更新角色信息
     void UpdatePlayerState();
+
+    // 委托：重新开始游戏
+    UFUNCTION()
+    void OnResetLevel();
 };
