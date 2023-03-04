@@ -11,5 +11,10 @@ class SHOOTTHEMUP_API USTUGameInstance : public UGameInstance {
     GENERATED_BODY()
 
 public:
-    FString TestString = "Hello Game!";
+    FName GetStartupLevelName() const { return StartupLevelName; }
+
+protected:
+    // 开始关卡的名称
+    UPROPERTY(EditDefaultsOnly, Category = "Game")
+    FName StartupLevelName = NAME_None;
 };

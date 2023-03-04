@@ -20,5 +20,5 @@ protected:
 
 private:
     UFUNCTION()
-    void OnStateGame();
+    void OnStartGame();
 };
