@@ -20,8 +20,8 @@ public:
     FName GetMenuLevelName() const { return MenuLevelName; }
 
 protected:
-    // 所有关卡的相关信息(ToolTip为显示在UE中的提示信息)
-    UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ToolTip = "Level name must be unique!!!"))
+    // 所有关卡的相关信息
+    UPROPERTY(EditDefaultsOnly, Category = "Game")
     TArray<FLevelData> LevelsData;
 
     // 主菜单关卡的名称

@@ -135,3 +135,23 @@ enum class ESTUMatchState : uint8 {
 };
 // 委托：游戏状态改变
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchStateChangedSignature, ESTUMatchState);
+
+/* 主菜单 */
+USTRUCT(BlueprintType)
+struct FLevelData {
+    GENERATED_USTRUCT_BODY()
+
+    // 关卡名称
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    FName LevelName = NAME_None;
+
+    // 显示的关卡名称
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    FName LevelDisplayName = NAME_None;
+
+    // 关卡缩略图
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    UTexture2D* LevelThumb;
+};
+// 委托：选择了某个关卡
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelSelectedSignature, const FLevelData&);
