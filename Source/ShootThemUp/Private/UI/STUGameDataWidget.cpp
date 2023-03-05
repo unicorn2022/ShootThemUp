@@ -6,12 +6,6 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUGameDataWidget, All, All);
 
-int32 USTUGameDataWidget::GetKillsNum() const {
-    const auto PlayerState = GetSTUPlayerState();
-    if (!PlayerState) return 0;
-    return PlayerState->GetKillsNum();
-}
-
 int32 USTUGameDataWidget::GetCurrentRoundNum() const {
     const auto GameMode = GetSTUGameMode();
     if (!GameMode) return 0;
