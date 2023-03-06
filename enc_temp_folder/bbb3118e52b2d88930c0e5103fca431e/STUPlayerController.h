@@ -26,10 +26,8 @@ protected:
     virtual void SetupInputComponent() override;
 
 private:
-    // 委托：暂停游戏
+    // 暂停游戏
     void OnPauseGame();
     // 委托：游戏状态改变
     void OnMatchStateChanged(ESTUMatchState State);
-    // 委托：静音
-    void OnMuteSound();
 };

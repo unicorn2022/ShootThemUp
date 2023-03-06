@@ -7,8 +7,6 @@
 #include "STUCoreTypes.h"
 #include "STUGameInstance.generated.h"
 
-class USoundClass;
-
 UCLASS()
 class SHOOTTHEMUP_API USTUGameInstance : public UGameInstance {
     GENERATED_BODY()
@@ -21,8 +19,6 @@ public:
 
     FName GetMenuLevelName() const { return MenuLevelName; }
 
-    void ToggleVolume();
-
 protected:
     // 所有关卡的相关信息(ToolTip为显示在UE中的提示信息)
     UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ToolTip = "Level name must be unique!!!"))
@@ -31,10 +27,6 @@ protected:
     // 主菜单关卡的名称
     UPROPERTY(EditDefaultsOnly, Category = "Game")
     FName MenuLevelName = NAME_None;
-
-    // 主音效类
-    UPROPERTY(EditDefaultsOnly, Category = "Sound")
-    USoundClass* MasterSoundClass;
 
 private:
     FLevelData StartupLevel;

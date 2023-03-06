@@ -3,7 +3,6 @@
 #include "Player/STUPlayerController.h"
 #include "Components/STURespawnComponent.h"
 #include "STUGameModeBase.h"
-#include "STUGameInstance.h"
 
 ASTUPlayerController::ASTUPlayerController() {
     // 创建重生组件
@@ -31,10 +30,9 @@ void ASTUPlayerController::SetupInputComponent() {
     if (!InputComponent) return;
 
     InputComponent->BindAction("PauseGame", IE_Pressed, this, &ASTUPlayerController::OnPauseGame);
-    InputComponent->BindAction("Mute", IE_Pressed, this, &ASTUPlayerController::OnMuteSound);
 }
 
-// 委托：暂停游戏
+// 暂停游戏
 void ASTUPlayerController::OnPauseGame() {
     if (!GetWorld() || !GetWorld()->GetAuthGameMode()) return;
 
@@ -51,14 +49,4 @@ void ASTUPlayerController::OnMatchStateChanged(ESTUMatchState State) {
         SetInputMode(FInputModeUIOnly());
         bShowMouseCursor = true;
     }
-}
-
-// 委托：静音
-void ASTUPlayerController::OnMuteSound() {
-    if (!GetWorld()) return;
-
-    const auto STUGameInstance = GetWorld()->GetGameInstance<USTUGameInstance>();
-    if (!STUGameInstance) return;
-
-    STUGameInstance->ToggleVolume();
 }

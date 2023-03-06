@@ -123,7 +123,7 @@ void ASTUGameModeBase::StartRound() {
 }
 // 更新计时器
 void ASTUGameModeBase::GameTimerUpdate() {
-    UE_LOG(LogSTUGameModeBase, Display, TEXT("Time: %i / Round: %i/%i"), RoundCountDown, CurrentRound, GameData.RoundsNum);
+    // UE_LOG(LogSTUGameModeBase, Display, TEXT("Time: %i / Round: %i/%i"), RoundCountDown, CurrentRound, GameData.RoundsNum);
 
     RoundCountDown--;
     // 也可以使用如下方案, 但是此时RoundCountDown就是float了
