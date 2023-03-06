@@ -72,8 +72,9 @@ void ASTUBaseCharacter::OnDeath() {
     // 禁止胶囊体碰撞
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
-    // 停止武器组件的开火
+    // 停止武器组件的开火 & 缩放
     WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
 
     // 启用物理模拟, 实现角色死亡效果
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);

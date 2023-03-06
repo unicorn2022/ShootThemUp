@@ -35,6 +35,19 @@ void ASTURifleWeapon::StopFire() {
     SetFXActive(false);
 }
 
+// 缩放
+void ASTURifleWeapon::Zoom(bool Enabled) {
+    const auto Controller = Cast<APlayerController>(GetController());
+    if (!Controller || !Controller->PlayerCameraManager) return;
+
+    if (Enabled) {
+        DefaultCameraFOV = Controller->PlayerCameraManager->GetFOVAngle();
+    }
+
+    // 根据Enabled的值, 直接修改相机的视场
+    Controller->PlayerCameraManager->SetFOV(Enabled ? FOVZoomAngle : DefaultCameraFOV);
+}
+
 // 发射子弹
 void ASTURifleWeapon::MakeShot() {
     // 判断当前弹夹是否为空

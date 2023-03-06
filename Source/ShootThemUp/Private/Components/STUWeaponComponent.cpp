@@ -79,9 +79,10 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex) {
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!GetWorld() || !Character) return;
 
-    // 如果已经有武器, 将当前武器转移到背后
+    // 如果已经有武器, 将当前武器转移到背后, 停止开火 & 缩放
     if (CurrentWeapon) {
         CurrentWeapon->StopFire();
+        CurrentWeapon->Zoom(false);
         AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponAmorySocketName);
     }
 
@@ -214,4 +215,9 @@ bool USTUWeaponComponent::NeedAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType) {
         }
     }
     return false;
+}
+
+// 缩放
+void USTUWeaponComponent::Zoom(bool Enabled) {
+    if (CurrentWeapon) CurrentWeapon->Zoom(Enabled);
 }

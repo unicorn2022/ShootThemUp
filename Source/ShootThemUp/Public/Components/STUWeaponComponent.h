@@ -38,6 +38,9 @@ public:
     // 判断是否需要拾取弹药
     bool NeedAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType);
 
+    // 缩放
+    void Zoom(bool Enabled);
+
 protected:
     // 武器的相关数据: 武器类, 切换弹夹的动画
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")

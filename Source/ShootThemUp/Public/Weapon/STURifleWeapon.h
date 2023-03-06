@@ -20,6 +20,8 @@ public:
 
     virtual void StartFire() override;
     virtual void StopFire() override;
+    // 缩放
+    virtual void Zoom(bool Enabled) override;
 
 protected:
     // 自动开火的时间间隔
@@ -32,6 +34,10 @@ protected:
     // 武器造成的伤害
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     float DamageAmount = 10.0f;
+
+    // 缩放的视角
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    float FOVZoomAngle = 50.0f;
 
     // 子弹路径特效系统
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
@@ -64,6 +70,9 @@ private:
     // 音效组件
     UPROPERTY()
     UAudioComponent* FireAudioComponent;
+
+    // 默认缩放视角
+    float DefaultCameraFOV = 90.0f;
 
 private:
     // 对子弹击中的玩家进行伤害

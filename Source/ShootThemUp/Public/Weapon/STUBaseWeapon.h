@@ -43,6 +43,9 @@ public:
     // 判断是否有剩余弹夹
     bool HasClip() const;
 
+    // 缩放
+    virtual void Zoom(bool Enabled) {}
+
 protected:
     // 武器的骨骼网格体
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
