@@ -33,12 +33,8 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UUserWidget> LevelItemWidgetClass;
 
-    // 动画：隐藏整个UI界面, 用于关卡加载时防止冻结
-    UPROPERTY(meta = (BindWidgetAnim), Transient)
-    UWidgetAnimation* HideAnimation;
 
     virtual void NativeOnInitialized() override;
-    virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation) override;
 
 private:
     // 单个关卡选择控件
