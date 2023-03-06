@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/STUBaseWidget.h"
 #include "STUCoreTypes.h"
 #include "STUPlayerHUDWidget.generated.h"
 
 class UProgressBar;
 
 UCLASS()
-class SHOOTTHEMUP_API USTUPlayerHUDWidget : public UUserWidget {
+class SHOOTTHEMUP_API USTUPlayerHUDWidget : public USTUBaseWidget {
     GENERATED_BODY()
 public:
     UFUNCTION(BlueprintCallable, Category = "UI")
@@ -46,6 +46,10 @@ protected:
     // 角色血量条
     UPROPERTY(meta = (BindWidget))
     UProgressBar* HealthProgressBar;
+
+    // 角色受伤时, UI动画
+    UPROPERTY(meta = (BindWidgetAnim), Transient)
+    UWidgetAnimation* DamageAnimation;
 
     // 达到该百分比后, 血量条变色
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")

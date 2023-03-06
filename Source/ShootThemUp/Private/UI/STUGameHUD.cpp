@@ -2,7 +2,7 @@
 
 #include "UI/STUGameHUD.h"
 #include "Engine/Canvas.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/STUBaseWidget.h"
 #include "STUGameModeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUGameHUD, All, All);
@@ -16,9 +16,9 @@ void ASTUGameHUD::BeginPlay() {
     Super::BeginPlay();
 
     // 将UserWidget与对应游戏状态建立映射
-    GameWidgets.Add(ESTUMatchState::InProgress, CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass));
-    GameWidgets.Add(ESTUMatchState::Pause, CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass));
-    GameWidgets.Add(ESTUMatchState::GameOver, CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass));
+    GameWidgets.Add(ESTUMatchState::InProgress, CreateWidget<USTUBaseWidget>(GetWorld(), PlayerHUDWidgetClass));
+    GameWidgets.Add(ESTUMatchState::Pause, CreateWidget<USTUBaseWidget>(GetWorld(), PauseWidgetClass));
+    GameWidgets.Add(ESTUMatchState::GameOver, CreateWidget<USTUBaseWidget>(GetWorld(), GameOverWidgetClass));
 
     // 将UserWidget添加到场景中, 并设置为不可见
     for (auto GameWidgetPair : GameWidgets) {
@@ -57,7 +57,10 @@ void ASTUGameHUD::OnMatchStateChanged(ESTUMatchState State) {
     if (CurrentWidget) CurrentWidget->SetVisibility(ESlateVisibility::Hidden);
     // 然后更改UI界面
     if (GameWidgets.Contains(State)) CurrentWidget = GameWidgets[State];
-    if (CurrentWidget) CurrentWidget->SetVisibility(ESlateVisibility::Visible);
+    if (CurrentWidget) {
+        CurrentWidget->SetVisibility(ESlateVisibility::Visible);
+        CurrentWidget->Show();
+    }
 
-    UE_LOG(LogSTUGameHUD, Warning, TEXT("Match state changed: %s"), *UEnum::GetValueAsString(State));
+    UE_LOG(LogSTUGameHUD, Display, TEXT("Match state changed: %s"), *UEnum::GetValueAsString(State));
 }

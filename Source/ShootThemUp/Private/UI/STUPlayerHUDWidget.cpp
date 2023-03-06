@@ -76,7 +76,10 @@ void USTUPlayerHUDWidget::NativeOnInitialized() {
 // 玩家血量变化时
 void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta) {
     // 血量变化值 < 0, 受到伤害
-    if (HealthDelta < 0.0f) OnTakeDamage();
+    if (HealthDelta < 0.0f) {
+        OnTakeDamage();
+        if (!IsAnimationPlaying(DamageAnimation)) PlayAnimation(DamageAnimation);
+    }
 
     // 更新血量条
     UpdateHealthBar();
