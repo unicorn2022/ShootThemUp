@@ -7,6 +7,7 @@
 #include "STUBasePickup.generated.h"
 
 class USphereComponent;
+class USoundCue;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBasePickup : public AActor {
@@ -27,6 +28,10 @@ protected:
     // 是否可以被捡起
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
     bool CouldBeTakenTest = true;
+
+    // 音效：拾取
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* PickupSound;
 
 protected:
     virtual void BeginPlay() override;

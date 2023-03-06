@@ -58,6 +58,8 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, float, float);
 
 /* 特效 */
 class UNiagaraSystem;
+class USoundCue;
+
 // 贴花数据：材质 & 大小 & 停留时间 & 淡出动画时间
 USTRUCT(BlueprintType)
 struct FDecalData {
@@ -79,7 +81,7 @@ struct FDecalData {
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     float FadeOutTime = 0.7f;
 };
-// 击中特效数据：特效 & 贴花
+// 击中特效数据：特效 & 贴花 & 击中
 USTRUCT(BlueprintType)
 struct FImpactData {
     GENERATED_USTRUCT_BODY()
@@ -91,6 +93,10 @@ struct FImpactData {
     // 贴花数据
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     FDecalData DecalData;
+
+    // 音效：击中
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    USoundCue* Sound;
 };
 
 /* 游戏模式 */

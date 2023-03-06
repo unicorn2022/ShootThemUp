@@ -2,6 +2,8 @@
 
 #include "Pickups/STUBasePickup.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUBasePickup, All, All);
 
@@ -56,6 +58,9 @@ void ASTUBasePickup::PickupWasTaken() {
     // 开启重新生成Actor的定时器
     FTimerHandle RespawnTimerHandle;
     GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &ASTUBasePickup::Respawn, RespawnTime);
+
+    // 播放拾取音效
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), PickupSound, GetActorLocation());
 }
 
 // 重新生成Actor
