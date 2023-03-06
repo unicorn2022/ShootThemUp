@@ -7,22 +7,18 @@
 #include "STULauncherWeapon.generated.h"
 
 class ASTUProjectile;
-class USoundCue;
 
 UCLASS()
-class SHOOTTHEMUP_API ASTULauncherWeapon : public ASTUBaseWeapon {
-    GENERATED_BODY()
+class SHOOTTHEMUP_API ASTULauncherWeapon : public ASTUBaseWeapon
+{
+	GENERATED_BODY()
 public:
     virtual void StartFire() override;
 
 protected:
-    // è¦å‘å°„çš„æ¦´å¼¹çš„ç±»
+    // Òª·¢ÉäµÄÁñµ¯µÄÀà
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     TSubclassOf<ASTUProjectile> ProjectileClass;
-
-    // éŸ³æ•ˆï¼šæ²¡æœ‰å­å¼¹
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
-    USoundCue* NoAmmoSound;
 
     virtual void MakeShot() override;
 };

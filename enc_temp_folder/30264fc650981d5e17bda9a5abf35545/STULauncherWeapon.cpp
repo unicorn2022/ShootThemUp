@@ -3,7 +3,6 @@
 #include "Weapon/STULauncherWeapon.h"
 #include "Weapon/STUProjectile.h"
 #include "Kismet/GameplayStatics.h"
-#include "Sound/SoundCue.h"
 
 void ASTULauncherWeapon::StartFire() {
     MakeShot();
@@ -11,13 +10,7 @@ void ASTULauncherWeapon::StartFire() {
 
 void ASTULauncherWeapon::MakeShot() {
     // 判断当前弹夹是否为空
-    if (!GetWorld()) return;
-
-    // 弹夹为空
-    if (IsClipEmpty()) {
-        UGameplayStatics::SpawnSoundAtLocation(GetWorld(), NoAmmoSound, GetActorLocation());
-        return;
-    }
+    if (!GetWorld() || IsClipEmpty()) return;
 
     // 获取榴弹的逻辑路径
     FVector TraceStart, TraceEnd;
@@ -49,7 +42,4 @@ void ASTULauncherWeapon::MakeShot() {
 
     // 生成枪口特效系统, 由于该特效生成一次后就销毁, 因此我们并不需要其指针
     SpawnMuzzleFX();
-
-    // 在枪口骨骼处，生成音效播放器
-    UGameplayStatics::SpawnSoundAttached(FireSound, WeaponMesh, MuzzleSocketName);
 }

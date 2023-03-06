@@ -9,7 +9,6 @@
 class USTUWeaponFXComponent;
 class UNiagaraComponent;
 class UniagaraSystem;
-class UAudioComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTURifleWeapon : public ASTUBaseWeapon {
@@ -56,23 +55,18 @@ protected:
 private:
     // 自动开火的定时器
     FTimerHandle ShotTimerHandle;
-    
     // 枪口特效组件
     UPROPERTY()
     UNiagaraComponent* MuzzleFXComponent;
-
-    // 音效组件
-    UPROPERTY()
-    UAudioComponent* FireAudioComponent;
 
 private:
     // 对子弹击中的玩家进行伤害
     void MakeDamage(const FHitResult& HitResult);
 
-    // 初始化特效组件
-    void InitFX();
+    // 初始化枪口特效组件
+    void InitMuzzleFX();
     // 设置特效的可见性
-    void SetFXActive(bool IsActive);
+    void SetMuzzleFXVisibility(bool Visible);
 
     // 生成子弹路径特效
     void SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd);

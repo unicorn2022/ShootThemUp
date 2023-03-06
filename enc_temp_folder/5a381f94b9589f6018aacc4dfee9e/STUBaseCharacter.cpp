@@ -7,8 +7,6 @@
 #include "Components/STUWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Controller.h"
-#include "Kismet/GameplayStatics.h"
-#include "Sound/SoundCue.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUBaseCharacter, All, All);
 
@@ -78,9 +76,6 @@ void ASTUBaseCharacter::OnDeath() {
     // 启用物理模拟, 实现角色死亡效果
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     GetMesh()->SetSimulatePhysics(true);
-
-    // 播放音效
-    UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 }
 
 // 获取角色移动的方向
