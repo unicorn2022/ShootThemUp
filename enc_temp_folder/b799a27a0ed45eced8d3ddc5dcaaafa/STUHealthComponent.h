@@ -8,7 +8,6 @@
 #include "STUHealthComponent.generated.h"
 
 class UCameraShakeBase;
-class UPhysicalMaterial;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SHOOTTHEMUP_API USTUHealthComponent : public UActorComponent {
@@ -55,14 +54,10 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Heal", meta = (EditCondition = "AutoHeal"))
     float HealModifier = 5.0f;  // 每次治疗恢复5.0血量
 
-    // 针对不同位置, 造成不同伤害
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
-    TMap<UPhysicalMaterial*, float> DamageModifiers;
-
     // 相机抖动
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Heal", meta = (EditCondition = "AutoHeal"))
     TSubclassOf<UCameraShakeBase> CameraShake;
-
+        
     virtual void BeginPlay() override;
 
 private:
@@ -71,24 +66,10 @@ private:
     // 角色自动治疗计时器
     FTimerHandle HealTimerHandle;
 
-    // 委托：角色受到伤害
+    // 角色受到伤害的回调函数
     UFUNCTION()
     void OnTakeAnyDamageHandler(
         AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-
-    // 委托：角色受到点伤害
-    UFUNCTION()
-    void OnTakePointDamage(AActor* DamagedActor, float Damage, class AController* InstigatedBy, FVector HitLocation,
-        class UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const class UDamageType* DamageType,
-        AActor* DamageCauser);
-
-    // 委托：角色受到范围伤害
-    UFUNCTION()
-    void OnTakeRadialDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, FVector Origin, FHitResult HitInfo,
-        class AController* InstigatedBy, AActor* DamageCauser);
-
-    // 造成伤害
-    void ApplyDamage(float Damage, AController* InstigatedBy);
 
     // 角色自动恢复
     void HealUpdate();
@@ -101,7 +82,4 @@ private:
 
     // 被杀死
     void Killed(AController* KillerController);
-
-    // 获取击中某个骨骼需要造成的伤害修正
-    float GetPointDamageModifier(AActor* DamagedActor, const FName& BoneName);
 };

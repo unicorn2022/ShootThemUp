@@ -1,13 +1,13 @@
 // Shoot Them Up Game, All Rights Reserved
 
 #include "Components/STUHealthComponent.h"
-#include "GameFramework/Character.h"
+#include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
 #include "GameFramework/Controller.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
 #include "Camera/CameraShakeBase.h"
 #include "STUGameModeBase.h"
-#include "PhysicalMaterials/PhysicalMaterial.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUHealthComponent, All, All);
 
@@ -25,45 +25,21 @@ void USTUHealthComponent::BeginPlay() {
     // 订阅OnTakeAnyDamage事件
     AActor* ComponentOwner = GetOwner();
     if (ComponentOwner) {
+        // UE_LOG(LogSTUHealthComponent, Display, TEXT("订阅 OnTakeAnyDamage 事件"));
         ComponentOwner->OnTakeAnyDamage.AddDynamic(this, &USTUHealthComponent::OnTakeAnyDamageHandler);
-        ComponentOwner->OnTakePointDamage.AddDynamic(this, &USTUHealthComponent::OnTakePointDamage);
-        ComponentOwner->OnTakeRadialDamage.AddDynamic(this, &USTUHealthComponent::OnTakeRadialDamage);
     }
 }
 
-// 委托：角色受到伤害
+// 角色受到伤害的回调函数
 void USTUHealthComponent::OnTakeAnyDamageHandler(
     AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser) {
-
-    UE_LOG(LogSTUHealthComponent, Display, TEXT("On any damage: %f"), Damage);
-
-}
-// 委托：角色受到点伤害
-void USTUHealthComponent::OnTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation,
-    UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser) {
-    
-    const auto FinalDamage = Damage * GetPointDamageModifier(DamagedActor, BoneName);
-    UE_LOG(LogSTUHealthComponent, Display, TEXT("On point damage: %f, final damage: %f, bone: %s"), Damage, FinalDamage, *BoneName.ToString());
-    ApplyDamage(FinalDamage, InstigatedBy);
-
-}
-// 委托：角色受到范围伤害
-void USTUHealthComponent::OnTakeRadialDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, FVector Origin,
-    FHitResult HitInfo, AController* InstigatedBy, AActor* DamageCauser) {
-    
-    UE_LOG(LogSTUHealthComponent, Display, TEXT("On radial damage: %f"), Damage);
-    ApplyDamage(Damage, InstigatedBy);
-
-}
-// 造成伤害
-void USTUHealthComponent::ApplyDamage(float Damage, AController* InstigatedBy) {
     if (Damage <= 0.0f || IsDead() || !GetWorld()) return;
 
     SetHealth(Health - Damage);
 
     // 角色受伤时, 停止自动恢复
     GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
-
+    
     // 角色死亡后, 广播OnDeath委托
     if (IsDead()) {
         Killed(InstigatedBy);
@@ -136,21 +112,4 @@ void USTUHealthComponent::Killed(AController* KillerController) {
 
     const auto VictimController = Player->GetController();
     GameMode->Killed(KillerController, VictimController);
-}
-
-// 获取击中某个骨骼需要造成的伤害修正
-float USTUHealthComponent::GetPointDamageModifier(AActor* DamagedActor, const FName& BoneName) {
-    const auto Character = Cast<ACharacter>(DamagedActor);
-    if (!Character) return 1.0f;
-
-    const auto Mesh = Character->GetMesh();
-    if (!Mesh) return 1.0f;
-
-    const auto BodyInstance = Mesh->GetBodyInstance(BoneName);
-    if (!BodyInstance) return 1.0f;
-
-    const auto PhysMaterial = BodyInstance->GetSimplePhysicalMaterial();
-    if (!PhysMaterial || !DamageModifiers.Contains(PhysMaterial)) return 1.0f;
-
-    return DamageModifiers[PhysMaterial];
 }
