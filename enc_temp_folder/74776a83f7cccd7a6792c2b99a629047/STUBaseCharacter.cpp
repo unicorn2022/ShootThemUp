@@ -49,18 +49,6 @@ void ASTUBaseCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 }
 
-void ASTUBaseCharacter::TurnOff() {
-    WeaponComponent->StopFire();
-    WeaponComponent->Zoom(false);
-    Super::TurnOff();
-}
-
-void ASTUBaseCharacter::Reset() {
-    WeaponComponent->StopFire();
-    WeaponComponent->Zoom(false);
-    Super::Reset();
-}
-
 // 血量变化回调函数
 void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta) {}
 

@@ -58,8 +58,6 @@ protected:
 
 public:
     virtual void Tick(float DeltaTime) override;
-    virtual void TurnOff() override;
-    virtual void Reset() override;
 
     // 判断角色是否处于奔跑状态
     UFUNCTION(BlueprintCallable, Category = "Movement")

@@ -91,7 +91,4 @@ private:
 
     // 设置游戏状态, 同时广播事件
     void SetMatchState(ESTUMatchState State);
-
-    // 停止所有射击
-    void StopAllFire();
 };

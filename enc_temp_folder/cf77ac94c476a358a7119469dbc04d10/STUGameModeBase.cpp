@@ -8,7 +8,6 @@
 #include "Player/STUPlayerState.h"
 #include "STUUtils.h"
 #include "Components/STURespawnComponent.h"
-#include "Components/STUWeaponComponent.h"
 #include "EngineUtils.h"
 #include "STUGameInstance.h"
 
@@ -54,6 +53,7 @@ void ASTUGameModeBase::Killed(AController* KillerController, AController* Victim
     // 让victim重生
     StartRespawn(VictimController);
 }
+
 
 
 // 生成AI
@@ -206,7 +206,6 @@ bool ASTUGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDel
     // 先判断能否暂停, 然后再设置游戏状态
     const auto PauseSet = Super::SetPause(PC, CanUnpauseDelegate);
     if (PauseSet) {
-        StopAllFire();
         SetMatchState(ESTUMatchState::Pause);
     }
     return PauseSet;
@@ -242,14 +241,4 @@ void ASTUGameModeBase::SetMatchState(ESTUMatchState State) {
 
     MatchState = State;
     OnMatchStateChanged.Broadcast(MatchState);
-}
-
-void ASTUGameModeBase::StopAllFire() {
-    for (auto Pawn : TActorRange<APawn>(GetWorld())) {
-        const auto WeaponComponent = STUUtils::GetSTUPlayerComponent<USTUWeaponComponent>(Pawn);
-        if (!WeaponComponent) continue;
-
-        WeaponComponent->StopFire();
-        WeaponComponent->Zoom(false);
-    }
 }
