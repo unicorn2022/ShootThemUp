@@ -6,7 +6,6 @@
 #include "Components/HorizontalBox.h"
 #include "Kismet/GameplayStatics.h"
 #include "STUGameInstance.h"
-#include "Sound/SoundCue.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUMenuUserWidget, All, All)
 
@@ -78,7 +77,6 @@ void USTUMenuUserWidget::OnLevelSelected(const FLevelData& Data) {
 // 委托：开始游戏
 void USTUMenuUserWidget::OnStartGame() {
     PlayAnimation(HideAnimation);
-    UGameplayStatics::PlaySound2D(GetWorld(), StartGameSound);
 }
 
 // 委托：退出游戏

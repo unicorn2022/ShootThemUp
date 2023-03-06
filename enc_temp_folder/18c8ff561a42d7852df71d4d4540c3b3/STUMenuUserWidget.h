@@ -11,7 +11,6 @@ class UButton;
 class UHorizontalBox;
 class USTUGameInstance;
 class USTULevelItemWidget;
-class USoundCue;
 
 UCLASS()
 class SHOOTTHEMUP_API USTUMenuUserWidget : public USTUBaseWidget {
@@ -37,10 +36,6 @@ protected:
     // 动画：隐藏整个UI界面, 用于关卡加载时防止冻结
     UPROPERTY(meta = (BindWidgetAnim), Transient)
     UWidgetAnimation* HideAnimation;
-
-    // 音效：开始游戏
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
-    USoundCue* StartGameSound;
 
     virtual void NativeOnInitialized() override;
     virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation) override;
