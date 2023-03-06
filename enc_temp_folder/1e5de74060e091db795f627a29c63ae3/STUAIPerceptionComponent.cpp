@@ -5,19 +5,12 @@
 #include "STUUtils.h"
 #include "Components/STUHealthComponent.h"
 #include "Perception/AISense_Sight.h"
-#include "Perception/AISense_Damage.h"
 
 AActor* USTUAIPerceptionComponent::GetClosetEnemy() const {
     // 获取AI视野内的所有Actor
     TArray<AActor*> PerciveActors;
     GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), PerciveActors);
-    
-    // AI视野内没有Actor
-    if (PerciveActors.Num() == 0) {
-        // 获取对AI造成伤害的Actor
-        GetCurrentlyPerceivedActors(UAISense_Damage::StaticClass(), PerciveActors);
-        if (PerciveActors.Num() == 0) return nullptr;
-    }
+    if (PerciveActors.Num() == 0) return nullptr;
 
     // 获取当前角色的Pawn
     const auto Controller = Cast<AAIController>(GetOwner());

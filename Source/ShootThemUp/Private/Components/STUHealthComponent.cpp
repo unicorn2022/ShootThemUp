@@ -8,6 +8,7 @@
 #include "Camera/CameraShakeBase.h"
 #include "STUGameModeBase.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Perception/AISense_Damage.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUHealthComponent, All, All);
 
@@ -76,6 +77,8 @@ void USTUHealthComponent::ApplyDamage(float Damage, AController* InstigatedBy) {
 
     // 相机抖动
     PlayCameraShake();
+    // 将受到的伤害传递给感官系统
+    ReportDamageEvent(Damage, InstigatedBy);
 }
 
 // 角色自动恢复
@@ -153,4 +156,16 @@ float USTUHealthComponent::GetPointDamageModifier(AActor* DamagedActor, const FN
     if (!PhysMaterial || !DamageModifiers.Contains(PhysMaterial)) return 1.0f;
 
     return DamageModifiers[PhysMaterial];
+}
+
+// 将受到的伤害传递给感官系统
+void USTUHealthComponent::ReportDamageEvent(float Damage, AController* InstigatedBy) {
+    if (!InstigatedBy || !InstigatedBy->GetPawn() || !GetOwner()) return;
+
+    UAISense_Damage::ReportDamageEvent(GetWorld(),    //
+        GetOwner(),                                   //
+        InstigatedBy->GetPawn(),                      //
+        Damage,                                       //
+        InstigatedBy->GetPawn()->GetActorLocation(),  //
+        GetOwner()->GetActorLocation());
 }

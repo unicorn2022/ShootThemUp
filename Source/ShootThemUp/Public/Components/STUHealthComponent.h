@@ -87,8 +87,6 @@ private:
     void OnTakeRadialDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, FVector Origin, FHitResult HitInfo,
         class AController* InstigatedBy, AActor* DamageCauser);
 
-    // 造成伤害
-    void ApplyDamage(float Damage, AController* InstigatedBy);
 
     // 角色自动恢复
     void HealUpdate();
@@ -101,7 +99,11 @@ private:
 
     // 被杀死
     void Killed(AController* KillerController);
-
+    // 造成伤害
+    void ApplyDamage(float Damage, AController* InstigatedBy);
     // 获取击中某个骨骼需要造成的伤害修正
     float GetPointDamageModifier(AActor* DamagedActor, const FName& BoneName);
+
+    // 将受到的伤害传递给感官系统
+    void ReportDamageEvent(float Damage, AController* InstigatedBy);
 };
