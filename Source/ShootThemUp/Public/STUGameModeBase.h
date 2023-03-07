@@ -56,6 +56,8 @@ private:
     void SpawnBots();
     // 创建队伍信息
     void CreateTeamsInfo();
+    // 根据队伍, 设置AI位置
+    void SetBotsLocationByTeamID(AController* NowController);
     // 根据TeamID, 决定TeamColor
     FLinearColor DetermineColorByTeamID(int32 TeamID);
     // 设置玩家颜色

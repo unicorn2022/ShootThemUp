@@ -60,6 +60,11 @@ void USTUHealthComponent::OnTakeRadialDamage(AActor* DamagedActor, float Damage,
 void USTUHealthComponent::ApplyDamage(float Damage, AController* InstigatedBy) {
     if (Damage <= 0.0f || IsDead() || !GetWorld()) return;
 
+    const auto Player = Cast<APawn>(GetOwner());
+    if (Player && Player->IsPlayerControlled()) {
+        UE_LOG(LogSTUHealthComponent, Warning, TEXT("Player get damaged: %f"), Damage);
+    }
+
     SetHealth(Health - Damage);
 
     // 角色受伤时, 停止自动恢复

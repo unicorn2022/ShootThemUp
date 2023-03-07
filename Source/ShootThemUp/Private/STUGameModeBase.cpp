@@ -11,6 +11,7 @@
 #include "Components/STUWeaponComponent.h"
 #include "EngineUtils.h"
 #include "STUGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUGameModeBase, All, All);
 
@@ -26,12 +27,18 @@ ASTUGameModeBase::ASTUGameModeBase() {
 void ASTUGameModeBase::StartPlay() {
     Super::StartPlay();
 
+    // 生成AI
     SpawnBots();
+    // 生成AI信息
     CreateTeamsInfo();
+    // 设置AI位置
+    SetBotsLocationByTeamID(nullptr);
 
+    // 开始游戏回合
     CurrentRound = 1;
     StartRound();
 
+    // 设置当前游戏状态
     SetMatchState(ESTUMatchState::InProgress);
 }
 
@@ -74,7 +81,7 @@ void ASTUGameModeBase::SpawnBots() {
 void ASTUGameModeBase::CreateTeamsInfo() {
     if (!GetWorld()) return;
 
-    int32 TeamID = 1;
+    int32 TeamID = 1, TeamCount = GameData.TeamCount;
     for (auto It = GetWorld()->GetControllerIterator(); It; ++It) {
         const auto Controller = It->Get();
         if (!Controller) continue;
@@ -86,14 +93,60 @@ void ASTUGameModeBase::CreateTeamsInfo() {
         PlayerState->SetTeamColor(DetermineColorByTeamID(TeamID));
         PlayerState->SetPlayerName(Controller->IsPlayerController() ? "Player" : "Bot");
         SetPlayerColor(Controller);
+        
+        // 下一个Team
+        TeamID = (TeamID + 1) % TeamCount;
+    }
+}
+// 根据队伍, 设置AI位置
+void ASTUGameModeBase::SetBotsLocationByTeamID(AController* NowController) {
+    // 根据Tag, 获取场景中的TeamStart
+    TArray<AActor*> TeamStarts;
+    UGameplayStatics::GetAllActorsWithTag(GetWorld(), TEXT("TeamStart"), TeamStarts);
+    if (TeamStarts.Num() == 0) {
+        UE_LOG(LogSTUGameModeBase, Error, TEXT("No Team Start!!!"));
+        return;
+    }
 
-        TeamID = TeamID == 1 ? 2 : 1;
+    // NowController!=nullptr时, 只生成一个AI的位置
+    if (NowController != nullptr) {
+        const auto Player = NowController->GetCharacter();
+        if (!Player) return;
+
+        const auto PlayerState = Cast<ASTUPlayerState>(NowController->PlayerState);
+        if (!PlayerState) return;
+
+        const auto TeamID = PlayerState->GetTeamID();
+        if (TeamID >= TeamStarts.Num()) return;
+
+        // 设置角色位置
+        const auto Location = TeamStarts[TeamID]->GetActorLocation();
+        Player->SetActorLocation(Location);
+        return;
+    }
+
+    // 设置所有AI的位置
+    for (auto It = GetWorld()->GetControllerIterator(); It; ++It) {
+        const auto Controller = It->Get();
+        if (!Controller) continue;
+        const auto Player = Controller->GetCharacter();
+        if (!Player) continue;
+
+        const auto PlayerState = Cast<ASTUPlayerState>(Controller->PlayerState);
+        if (!PlayerState) continue;
+
+        const auto TeamID = PlayerState->GetTeamID();
+        if (TeamID >= TeamStarts.Num()) continue;
+
+        // 设置角色位置
+        const auto Location = TeamStarts[TeamID]->GetActorLocation();
+        Player->SetActorLocation(Location);
     }
 }
 // 根据TeamID, 决定TeamColor
 FLinearColor ASTUGameModeBase::DetermineColorByTeamID(int32 TeamID) {
     if (TeamID <= GameData.TeamColors.Num()) {
-        return GameData.TeamColors[TeamID - 1];
+        return GameData.TeamColors[TeamID];
     } 
     else {
         UE_LOG(LogSTUGameModeBase, Warning, TEXT("No color for team id: %i, set to default: %s"), TeamID,
@@ -166,6 +219,7 @@ void ASTUGameModeBase::ResetOnePlayer(AController* Controller) {
 
     RestartPlayer(Controller);
     SetPlayerColor(Controller);
+    SetBotsLocationByTeamID(Controller);
 }
 
 

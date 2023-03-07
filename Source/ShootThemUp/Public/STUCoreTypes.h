@@ -128,6 +128,10 @@ struct FGameData {
     // 重生的时间(s)
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "20"))
     int32 RespawnTime = 5;
+
+    // 队伍总数
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "20"))
+    int32 TeamCount = 2;
 };
 
 /* 游戏菜单 */
