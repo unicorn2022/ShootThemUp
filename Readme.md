@@ -1,13 +1,31 @@
-# 写在前面
+# Shoot Them Up
 
 本项目是我在2022~2023学年寒假期间，跟随教程，基于UE4 C++编写的一个第三人称射击游戏
 
 教程网址：https://www.udemy.com/course/unrealengine/
 
+项目地址：https://github.com/unicorn2022/ShootThemUp
+
 # 使用说明
+
+如果是从git上直接clone的工程文件
 
 1. 右击`ShootThemUp.uproject`，生成VS工程文件
 2. 双击`ShootThemUp.sln`，点击`本地Windows调试器`，即可进入UE4界面，之后便是常规的用UE4导出游戏即可
+
+如果是直接使用打包后的版本：
+
+1. 双击`ShootThemUp.exe`，即可进入游戏
+
+# 责任描述
+
+1. 负责整个项目的构建和开发，使用UE4引擎实现游戏所需的各种功能
+2. 使用自定义HUD及Widget，实现游戏的UI界面、不同关卡之间的切换
+3. 使用自定义动画蓝图，实现角色移动、射击、更换武器等动画之间的切换与叠加等功能
+4. 使用自定义Actor组件，实现角色血量管理、武器状态管理、拾取物交互等功能
+5. 使用Niagara系统，实现特效的播放等功能
+6. 使用AI系统，实现NPC角色巡逻、发现敌人并攻击、受击后反击等功能
+7. 使用自定义SoundCue、SoundMix，实现有距离信息的音效、背景音乐等功能
 
 # 游戏操作
 
